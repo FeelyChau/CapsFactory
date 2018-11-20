@@ -47,8 +47,8 @@ string MsgGroup::CreateCpp() {
     rst += "#ifndef _CAPSMESSAGE_H\n";
     rst += "#define _CAPSMESSAGE_H\n";
     rst += "#include \"caps.h\"\n";
-    rst += "#include <vector>\n\n";
-    rst += "#include <string>\n\n";
+    rst += "#include <vector>\n";
+    rst += "#include <string>\n";
 
     if (ns.length() > 0)
     {

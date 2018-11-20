@@ -69,7 +69,10 @@ int main(int argc, char** argv) {
     }
     const char* input_file = clargs_opt_get(h, "i");
     const char* output_file = clargs_opt_get(h, "o");
-    string language = clargs_opt_get(h, "l");
+    const char* l = clargs_opt_get(h, "l");
+    string language;
+    if (l != nullptr)
+        language = l;
     string s = readFileIntoString(input_file);
     cJSON *root = cJSON_Parse(s.c_str());
     MsgGroup mg;

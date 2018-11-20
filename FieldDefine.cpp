@@ -298,35 +298,35 @@ const string FieldDefine::createClassMember(const string &tab)
     {
         if (field_type == FieldType::USERDEFINE)
         {
-            static const char* const Template_Member_Array_User_Define = "std::vector<%s> _%s\n";
+            static const char* const Template_Member_Array_User_Define = "std::vector<%s> _%s;\n";
             RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_User_Define, user_define_type_name.c_str(), name.c_str());
         }
         else if (field_type == FieldType::STRING)
         {
-            static const char* const Template_Member_Array_String = "std::vector<std::string> _%s\n";
+            static const char* const Template_Member_Array_String = "std::vector<std::string> _%s;\n";
             RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_String, name.c_str());
         }
         else
         {
-            static const char* const Template_Member_Array_String = "std::vector<%s> _%s\n";
-            RETURN_CODEFORMAT(tab.c_str(), FieldTypeStr[static_cast<int>(field_type)], name.c_str());
+            static const char* const Template_Member_Array_String = "std::vector<%s> _%s;\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_String, FieldTypeStr[static_cast<int>(field_type)], name.c_str());
         }
     }
     else
     {
         if (field_type == FieldType::USERDEFINE)
         {
-            static const char* const Template_Member_User_Define = "%s _%s\n";
+            static const char* const Template_Member_User_Define = "%s _%s;\n";
             RETURN_CODEFORMAT(tab.c_str(), Template_Member_User_Define, user_define_type_name.c_str(), name.c_str());
         }
         else if (field_type == FieldType::STRING)
         {
-            static const char* const Template_Member_String = "std::string _%s\n";
+            static const char* const Template_Member_String = "std::string _%s;\n";
             RETURN_CODEFORMAT(tab.c_str(), Template_Member_String, name.c_str());
         }
         else
         {
-            static const char* const Template_Member_String = "%s _%s\n";
+            static const char* const Template_Member_String = "%s _%s;\n";
             RETURN_CODEFORMAT(tab.c_str(), Template_Member_String, FieldTypeStr[static_cast<int>(field_type)], name.c_str());
         }
     }
