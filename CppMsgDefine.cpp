@@ -2,35 +2,12 @@
 // Created by 周飞宇 on 2018/11/17.
 //
 
-#include "MsgDefine.h"
+#include "CppMsgDefine.h"
 #include "Common.h"
 
-bool MsgDefine::Parse(cJSON *root) {
-    if (root->type != cJSON_Object)
-        return false;
-    cJSON * name = cJSON_GetObjectItem(root, "MsgName");
-    if (name && name->type == cJSON_String)
-        this->msg_name = name->valuestring;
-    else
-        return false;
 
-    cJSON * members = cJSON_GetObjectItem(root, "Fields");
-    if (!members)
-        return false;
-    else if (members->type == cJSON_Array)
-    {
-        for(int i = 0; i < cJSON_GetArraySize(members); ++i)
-        {
-            cJSON *field = cJSON_GetArrayItem(members, i);
-            fields.emplace_back();
-            if (!fields.back().Parse(field))
-                return false;
-        }
-    }
-    return true;
-}
 
-string MsgDefine::CreateCpp(string tab) {
+string CppMsgDefine::create_code_string(const string &tab) {
     static const char* const Template_Msg_Class = "class %s {\n"
                                                   "private:\n"
                                                   "%s"
@@ -41,27 +18,33 @@ string MsgDefine::CreateCpp(string tab) {
     //members
     string members;
     for(auto &field : fields)
-        members += field.createClassMember(TAB_VALUE);
+        members += field->create_class_member(TAB_VALUE);
     string getter;
     //field getter
     for(auto &field : fields)
-        getter += field.createGetFunction(TAB_VALUE);
+        getter += field->create_get_function(TAB_VALUE);
     //field setter
     string setter;
     for(auto &field : fields)
-        setter += field.createSetFunction(TAB_VALUE);
+        setter += field->create_set_function(TAB_VALUE);
     //serialize
-    string serialize = createSerialize(TAB_VALUE);
+    string serialize = create_serialize(TAB_VALUE);
     //deserialize
-    string deserialize = createDeserialize(TAB_VALUE);
+    string deserialize = create_deserialize(TAB_VALUE);
     //serialize for caps obj
-    string serialize_for_caps_obj = createSerializeForCapsObj(TAB_VALUE);
+    string serialize_for_caps_obj = create_serialize_for_caps_obj(TAB_VALUE);
     //deserialize for caps obj
-    string deserialize_for_caps_obj = createDeserializeForCapsObj(TAB_VALUE);
+    string deserialize_for_caps_obj = create_deserialize_for_caps_obj(TAB_VALUE);
     RETURN_CODEFORMAT(tab.c_str(), Template_Msg_Class, msg_name.c_str(), members.c_str(), (getter + setter + serialize + deserialize + serialize_for_caps_obj + deserialize_for_caps_obj).c_str());
 }
 
-string MsgDefine::createSerialize(const string &tab) {
+
+std::shared_ptr<BaseFieldDefine> CppMsgDefine::new_field_define()
+{
+    return std::make_shared<CppFieldDefine>();
+}
+
+string CppMsgDefine::create_serialize(const string &tab) {
     static const char* const Template_Serialize = "int32_t serialize(void* buf, uint32_t bufsize) const {\n"
                                                   TB"std::shared_ptr<Caps> caps = Caps::new_instance();\n"
                                                   TB"caps->write(static_cast<int32_t>(MessageType::TYPE_%s));\n"
@@ -70,11 +53,11 @@ string MsgDefine::createSerialize(const string &tab) {
                                                   "}\n\n";
     string field_serialize;
     for(auto &field : fields)
-        field_serialize += field.createSerializeFunction(TB);
+        field_serialize += field->create_serialize_function(TB);
     RETURN_CODEFORMAT(tab.c_str(), Template_Serialize, msg_name.c_str(), field_serialize.c_str());
 }
 
-string MsgDefine::createDeserialize(const string &tab) {
+string CppMsgDefine::create_deserialize(const string &tab) {
     static const char* const Template_Deserialize = "int32_t deserialize(void* buf, uint32_t bufsize) {\n"
                                                     TB"std::shared_ptr<Caps> caps;\n"
                                                     TB"int32_t p_rst = Caps::parse(buf, bufsize, caps);\n"
@@ -84,12 +67,12 @@ string MsgDefine::createDeserialize(const string &tab) {
                                                     "}\n\n";
     string field_deserialize;
     for(auto &field : fields)
-        field_deserialize += field.createDeserializeFunction(TB);
+        field_deserialize += field->create_deserialize_function(TB);
     RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, field_deserialize.c_str());
 }
 
 
-string MsgDefine::createSerializeForCapsObj(const string &tab)
+string CppMsgDefine::create_serialize_for_caps_obj(const string &tab)
 {
     static const char * const Template_SerializeForCapsObj = "int32_t serialize_for_caps_obj(std::shared_ptr<Caps> &caps) const {\n"
                                                              TB"caps = Caps::new_instance();\n"
@@ -99,11 +82,11 @@ string MsgDefine::createSerializeForCapsObj(const string &tab)
 
     string field_function_str;
     for(auto &field : fields)
-        field_function_str += field.createSerializeFunction("  ");
+        field_function_str += field->create_serialize_function("  ");
     RETURN_CODEFORMAT(tab.c_str(), Template_SerializeForCapsObj, field_function_str.c_str());
 }
 
-string MsgDefine::createDeserializeForCapsObj(const string &tab)
+string CppMsgDefine::create_deserialize_for_caps_obj(const string &tab)
 {
     static const char * const Template_DeserializeForCapsObj = "int32_t deserialize_for_caps_obj(std::shared_ptr<Caps> caps) {\n"
                                                                "%s"
@@ -111,14 +94,6 @@ string MsgDefine::createDeserializeForCapsObj(const string &tab)
                                                                "}\n\n";
     string field_deserialize;
     for(auto &field : fields)
-        field_deserialize += field.createDeserializeFunction(TB);
+        field_deserialize += field->create_deserialize_function(TB);
     RETURN_CODEFORMAT(tab.c_str(), Template_DeserializeForCapsObj, field_deserialize.c_str());
-}
-
-const string &MsgDefine::getMsg_name() const {
-    return msg_name;
-}
-
-const vector<FieldDefine> &MsgDefine::getFields() const {
-    return fields;
 }

@@ -32,3 +32,26 @@ std::string Common::add_tab(const char *str, const char *tab)
 
     return rst;
 }
+
+
+std::string Common::camel_case(const char *str)
+{
+    std::string rst;
+    if (*str != '\0')
+    {
+        rst.push_back(*str);
+        str++;
+    }
+    while(*str != '\0')
+    {
+        if (*str == '_' && *(str + 1) >= 'a' && *(str + 1) <= 'z')
+        {
+            str++;
+            rst.push_back((char)toupper(*str));
+        }
+        else
+            rst.push_back(*str);
+        str++;
+    }
+    return rst;
+}

@@ -6,7 +6,8 @@
 #include <cstring>
 
 #include "cJSON.h"
-#include "MsgGroup.h"
+#include "CppMsgGroup.h"
+#include "JavaMsgGroup.h"
 #include "Common.h"
 #include "clargs.h"
 using namespace std;
@@ -62,7 +63,7 @@ static void print_prompt(const char* progname) {
 int main(int argc, char** argv) {
     // parse arguments
     clargs_h h = clargs_parse(argc, argv);
-    if (h == 0 || clargs_opt_has(h, "help")) {
+    if (h == 0 || clargs_opt_has(h, "h")) {
         print_prompt(argv[0]);
         clargs_destroy(h);
         return 1;
@@ -75,14 +76,21 @@ int main(int argc, char** argv) {
         language = l;
     string s = readFileIntoString(input_file);
     cJSON *root = cJSON_Parse(s.c_str());
-    MsgGroup mg;
-    mg.Parse(root);
     if (language == "cpp")
     {
-        string source = mg.CreateCpp();
+        CppMsgGroup mg;
+        mg.parse(root);
+        string source = mg.create_code_string();
         writeFile(output_file, source);
     }
-    else
+    else if (language == "java")
+    {
+        JavaMsgGroup mg;
+        mg.parse(root);
+        string source = mg.create_code_string();
+        writeFile(output_file, source);
+
+    }
         print_prompt(argv[0]);
     clargs_destroy(h);
     return 0;

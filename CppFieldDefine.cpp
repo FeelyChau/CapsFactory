@@ -4,107 +4,13 @@
 
 #include <iostream>
 #include <algorithm>
-#include "FieldDefine.h"
+#include "CppFieldDefine.h"
 #include "Common.h"
 
 
-bool FieldDefine::Parse(cJSON *root) {
-    if (root->type != cJSON_Object)
-        return false;
-    cJSON * name = cJSON_GetObjectItem(root, "Name");
-    if (name && name->type == cJSON_String)
-        this->name = name->valuestring;
-    else
-        return false;
-
-    cJSON * ftype = cJSON_GetObjectItem(root, "Type");
-    if (ftype && ftype->type == cJSON_String)
-    {
-        string field_type_name = ftype->valuestring;
-        std::transform(field_type_name.begin(), field_type_name.end(), field_type_name.begin(), ::tolower);
-        if (field_type_name == "string")
-            field_type = FieldType::STRING;
-        else if (field_type_name == "int32")
-            field_type = FieldType::INT32;
-//        else if (field_type_name == "uint32")
-//            field_type = FieldType::UINT32;
-//        else if (field_type_name == "uint64")
-//            field_type = FieldType::UINT64;
-        else if (field_type_name == "int64")
-            field_type = FieldType::INT64;
-        else if (field_type_name == "float")
-            field_type = FieldType::FLOAT;
-        else if (field_type_name == "double")
-            field_type = FieldType::DOUBLE;
-        else
-        {
-            user_define_type_name = ftype->valuestring;
-            field_type = FieldType::USERDEFINE;
-        }
-    }
-    else
-        return false;
 
 
-
-    cJSON * optional = cJSON_GetObjectItem(root, "Optional");
-    if (!optional)
-    {
-        cout<<"[Optional] of field ["<<this->name<<"] is invalid(defalue 'false')"<<endl;
-        this->optional = false;
-    }
-    else if (optional->type == cJSON_False)
-        this->optional = false;
-    else if (optional->type == cJSON_True)
-        this->optional = true;
-
-    cJSON * repeated = cJSON_GetObjectItem(root, "Repeated");
-    if (!repeated)
-    {
-        cout<<"[repeated] of field ["<<this->name<<"] is invalid(defalue 'false')"<<endl;
-        this->repeated = false;
-    }
-    else if (repeated->type == cJSON_False)
-        this->repeated = false;
-    else if (repeated->type == cJSON_True)
-        this->repeated = true;
-
-    return true;
-}
-
-void FieldDefine::setName(const string &name) {
-    FieldDefine::name = name;
-}
-
-void FieldDefine::setField_type(FieldType field_type) {
-    FieldDefine::field_type = field_type;
-}
-
-void FieldDefine::setOptional(bool optional) {
-    FieldDefine::optional = optional;
-}
-
-void FieldDefine::setRepeated(bool repeated) {
-    FieldDefine::repeated = repeated;
-}
-
-const string &FieldDefine::getName() const {
-    return name;
-}
-
-FieldType FieldDefine::getField_type() const {
-    return field_type;
-}
-
-bool FieldDefine::isOptional() const {
-    return optional;
-}
-
-bool FieldDefine::isRepeated() const {
-    return repeated;
-}
-
-const string FieldDefine::createGetFunction(const string &tab) {
+const string CppFieldDefine::create_get_function(const string &tab) {
     if (repeated) {
         if (field_type == FieldType::USERDEFINE) {
             static const char *const Template_TypeName_Array_User_Define = "const std::vector<%s>& get_%s() const { return _%s; }\n";
@@ -134,7 +40,7 @@ const string FieldDefine::createGetFunction(const string &tab) {
     }
 }
 
-const string FieldDefine::createSetFunction(const string &tab) {
+const string CppFieldDefine::create_set_function(const string &tab) {
     if (repeated)
     {
         if (field_type == FieldType::USERDEFINE)
@@ -175,7 +81,7 @@ const string FieldDefine::createSetFunction(const string &tab) {
     }
 }
 
-const string FieldDefine::createSerializeFunction(const string &tab) {
+const string CppFieldDefine::create_serialize_function(const string &tab) {
     if (repeated) {
         if (field_type == FieldType::USERDEFINE) {
             static const char* const Template_Serialize_Array_User_Define = "caps->write((int32_t)_%s.size());\n"
@@ -222,7 +128,7 @@ const string FieldDefine::createSerializeFunction(const string &tab) {
     }
 }
 
-const string FieldDefine::createDeserializeFunction(const string &tab) {
+const string CppFieldDefine::create_deserialize_function(const string &tab) {
     if (repeated) {
         if (field_type == FieldType::USERDEFINE) {
             static const char* const Template_Deserialize_Array_User_Define = "int32_t array_size_%s = 0;\n"
@@ -267,13 +173,13 @@ const string FieldDefine::createDeserializeFunction(const string &tab) {
     } else {
         if (field_type == FieldType::USERDEFINE) {
             static const char *const Template_Deserialize_User_Define = "std::shared_ptr<Caps> c_%s;\n"
-                                                                              "int32_t r_rst_%s = caps->read(c);\n"
-                                                                              "if (r_rst_%s != CAPS_SUCCESS) return r_rst_%s;\n"
-                                                                              "r_rst_%s = _%s.desrialize_for_obj(c);\n"
-                                                                              "if (r_rst_%s != CAPS_SUCCESS) return r_rst_%s;\n";
+                                                                        "int32_t r_rst_%s = caps->read(c_%s);\n"
+                                                                        "if (r_rst_%s != CAPS_SUCCESS) return r_rst_%s;\n"
+                                                                        "r_rst_%s = _%s.desrialize_for_caps_obj(c_%s);\n"
+                                                                        "if (r_rst_%s != CAPS_SUCCESS) return r_rst_%s;\n";
 
-            RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_User_Define, name.c_str(), name.c_str(),
-                              name.c_str(), name.c_str(), name.c_str(), name.c_str(), name.c_str(), name.c_str());
+            RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_User_Define, name.c_str(), name.c_str(), name.c_str(),
+                              name.c_str(), name.c_str(), name.c_str(), name.c_str(), name.c_str(), name.c_str(), name.c_str());
         }
         else if (field_type == FieldType::STRING) {
             static const char *const Template_Deserialize_String =
@@ -292,7 +198,7 @@ const string FieldDefine::createDeserializeFunction(const string &tab) {
     }
 }
 
-const string FieldDefine::createClassMember(const string &tab)
+const string CppFieldDefine::create_class_member(const string &tab)
 {
     if (repeated)
     {

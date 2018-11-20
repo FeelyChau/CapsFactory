@@ -20,6 +20,7 @@ return Common::add_tab(code, Tab)
 class Common {
 public:
     static std::string add_tab(const char *str, const char *tab);
+    static std::string camel_case(const char *str);
 };
 
 

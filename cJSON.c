@@ -92,7 +92,7 @@ void cJSON_Delete(cJSON *c)
 	}
 }
 
-/* Parse the input text to generate a number, and populate the result into item. */
+/* parse the input text to generate a number, and populate the result into item. */
 static const char *parse_number(cJSON *item,const char *num)
 {
 	double n=0,sign=1,scale=0;int subscale=0,signsubscale=1;
@@ -187,7 +187,7 @@ static unsigned parse_hex4(const char *str)
 	return h;
 }
 
-/* Parse the input text into an unescaped cstring, and populate item. */
+/* parse the input text into an unescaped cstring, and populate item. */
 static const unsigned char firstByteMark[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 static const char *parse_string(cJSON *item,const char *str)
 {
@@ -319,7 +319,7 @@ static char *print_object(cJSON *item,int depth,int fmt,printbuffer *p);
 /* Utility to jump whitespace and cr/lf */
 static const char *skip(const char *in) {while (in && *in && (unsigned char)*in<=32) in++; return in;}
 
-/* Parse an object - create a new root, and populate. */
+/* parse an object - create a new root, and populate. */
 cJSON *cJSON_ParseWithOpts(const char *value,const char **return_parse_end,int require_null_terminated)
 {
 	const char *end=0;

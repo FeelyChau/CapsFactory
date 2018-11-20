@@ -3,4 +3,4 @@ project(CapsFactory)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(CapsFactory main.cpp cJSON.c MsgDefine.cpp MsgDefine.h MsgGroup.cpp MsgGroup.h FieldDefine.cpp FieldDefine.h Common.cpp Common.h clargs.h clargs.cc)
+add_executable(CapsFactory main.cpp cJSON.c CppMsgDefine.cpp CppMsgDefine.h CppMsgGroup.cpp CppMsgGroup.h CppFieldDefine.cpp CppFieldDefine.h Common.cpp Common.h clargs.h clargs.cc JavaMsgDefine.cpp JavaMsgDefine.h BaseAll.cpp BaseAll.h JavaMsgGroup.cpp JavaMsgGroup.h JavaFieldDefine.cpp JavaFieldDefine.h)
