@@ -67,11 +67,18 @@ string MsgDefine::createSerialize(const string &tab) {
                                                   TB"caps->write(static_cast<int32_t>(MessageType::TYPE_%s));\n"
                                                   "%s"
                                                   TB"return caps->serialize(buf, bufsize);\n"
+                                                  "}\n\n"
+                                                  "int32_t serialize(std::shared_ptr<Caps> &caps) const {\n"
+                                                  TB"if (!caps)\n"
+                                                  TB TB"caps = Caps::new_instance();\n"
+                                                  TB"caps->write(static_cast<int32_t>(MessageType::TYPE_%s));\n"
+                                                  "%s"
+                                                  TB"return caps;\n"
                                                   "}\n\n";
     string field_serialize;
     for(auto &field : fields)
         field_serialize += field.createSerializeFunction(TB);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Serialize, msg_name.c_str(), field_serialize.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Serialize, msg_name.c_str(), field_serialize.c_str(), msg_name.c_str(), field_serialize.c_str());
 }
 
 string MsgDefine::createDeserialize(const string &tab) {
@@ -81,11 +88,15 @@ string MsgDefine::createDeserialize(const string &tab) {
                                                     TB"if(p_rst != CAPS_SUCCESS) return p_rst;\n"
                                                     "%s"
                                                     TB"return CAPS_SUCCESS;\n"
+                                                    "}\n\n"
+                                                    "int32_t deserialize(std::shared_ptr<Caps> &caps) {\n"
+                                                    "%s"
+                                                    TB"return CAPS_SUCCESS;\n"
                                                     "}\n\n";
     string field_deserialize;
     for(auto &field : fields)
         field_deserialize += field.createDeserializeFunction(TB);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, field_deserialize.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, field_deserialize.c_str(), field_deserialize.c_str());
 }
 
 
