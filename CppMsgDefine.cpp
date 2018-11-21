@@ -50,6 +50,13 @@ string CppMsgDefine::create_serialize(const string &tab) {
                                                   TB"caps->write(static_cast<int32_t>(MessageType::TYPE_%s));\n"
                                                   "%s"
                                                   TB"return caps->serialize(buf, bufsize);\n"
+                                                  "}\n\n"
+                                                  "int32_t serialize(std::shared_ptr<Caps> &caps) const {\n"
+                                                  TB"if (!caps)\n"
+                                                  TB TB"caps = Caps::new_instance();\n"
+                                                  TB"caps->write(static_cast<int32_t>(MessageType::TYPE_%s));\n"
+                                                  "%s"
+                                                  TB"return caps;\n"
                                                   "}\n\n";
     string field_serialize;
     for(auto &field : fields)
@@ -62,6 +69,10 @@ string CppMsgDefine::create_deserialize(const string &tab) {
                                                     TB"std::shared_ptr<Caps> caps;\n"
                                                     TB"int32_t p_rst = Caps::parse(buf, bufsize, caps);\n"
                                                     TB"if(p_rst != CAPS_SUCCESS) return p_rst;\n"
+                                                    "%s"
+                                                    TB"return CAPS_SUCCESS;\n"
+                                                    "}\n\n"
+                                                    "int32_t deserialize(std::shared_ptr<Caps> &caps) {\n"
                                                     "%s"
                                                     TB"return CAPS_SUCCESS;\n"
                                                     "}\n\n";
