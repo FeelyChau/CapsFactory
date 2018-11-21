@@ -102,7 +102,7 @@ const string JavaFieldDefine::create_serialize_function(const string &tab) {
         } else {
             static const char* const Template_Serialize_Inner = "int32_t w_rst_%s = caps->write((%s)_%s);\n"
                                                                 "if (w_rst_%s != CAPS_SUCCESS) return w_rst_%s;\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_Serialize_Inner, name.c_str(), FieldTypeStr[static_cast<int>(field_type)], name.c_str(), name.c_str(), name.c_str());
+            RETURN_CODEFORMAT(tab.c_str(), Template_Serialize_Inner, name.c_str(), FieldJavaTypeStr[static_cast<int>(field_type)], name.c_str(), name.c_str(), name.c_str());
         }
     }
 }
