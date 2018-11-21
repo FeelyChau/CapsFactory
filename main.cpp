@@ -62,7 +62,7 @@ static void print_prompt(const char* progname) {
 int main(int argc, char** argv) {
     // parse arguments
     clargs_h h = clargs_parse(argc, argv);
-    if (h == 0 || clargs_opt_has(h, "help")) {
+    if (h == 0 || clargs_opt_has(h, "h")) {
         print_prompt(argv[0]);
         clargs_destroy(h);
         return 1;

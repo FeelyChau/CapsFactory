@@ -73,7 +73,7 @@ string MsgDefine::createSerialize(const string &tab) {
                                                   TB TB"caps = Caps::new_instance();\n"
                                                   TB"caps->write(static_cast<int32_t>(MessageType::TYPE_%s));\n"
                                                   "%s"
-                                                  TB"return caps;\n"
+                                                  TB"return CAPS_SUCCESS;\n"
                                                   "}\n\n";
     string field_serialize;
     for(auto &field : fields)
