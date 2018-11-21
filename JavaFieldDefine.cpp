@@ -118,10 +118,10 @@ const string JavaFieldDefine::create_deserialize_function(const string &tab) {
                                                                               "for(Integer i = 0; i < arraySize_%s; ++i) {\n"
                                                                               TB"Caps c;\n"
                                                                               TB"if (caps.read(c) == CAPS_SUCCESS && c != null) {\n"
-                                                                              TB TB"%s tmpObj = new %s();\n"
-                                                                              TB TB"Integer dRst = tmpObj.deserializeForCapsObj(c);\n"
-                                                                              TB TB"if (dRst != CAPS_SUCCESS) return dRst;\n"
-                                                                              TB TB"%s.add(tmpObj);\n"
+                                                                              TBTB"%s tmpObj = new %s();\n"
+                                                                              TBTB"Integer dRst = tmpObj.deserializeForCapsObj(c);\n"
+                                                                              TBTB"if (dRst != CAPS_SUCCESS) return dRst;\n"
+                                                                              TBTB"%s.add(tmpObj);\n"
                                                                               TB"}\n"
                                                                               "}\n";
             RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_User_Define, camel_name.c_str(), camel_name.c_str(),

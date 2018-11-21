@@ -10,6 +10,8 @@
 #include "JavaMsgGroup.h"
 #include "Common.h"
 #include "clargs.h"
+#include "JSMsgGroup.h"
+
 using namespace std;
 /*
  * {
@@ -55,7 +57,7 @@ static void print_prompt(const char* progname) {
                               "options:\n"
                               "\t-i input_file_path        set the message-define file path\n"
                               "\t-o output_file_path       set the code file path\n"
-                              "\t-l [cpp, c , nodejs]      set code language(support cpp only for now)";
+                              "\t-l [cpp, c, js, java]      set code language(support cpp only for now)";
     printf(form, progname);
 }
 
@@ -76,22 +78,22 @@ int main(int argc, char** argv) {
         language = l;
     string s = readFileIntoString(input_file);
     cJSON *root = cJSON_Parse(s.c_str());
+    BaseMsgGroup *mg = nullptr;
     if (language == "cpp")
-    {
-        CppMsgGroup mg;
-        mg.parse(root);
-        string source = mg.create_code_string();
-        writeFile(output_file, source);
-    }
+        mg = new CppMsgGroup();
     else if (language == "java")
-    {
-        JavaMsgGroup mg;
-        mg.parse(root);
-        string source = mg.create_code_string();
-        writeFile(output_file, source);
-
-    }
+        mg = new JavaMsgGroup();
+    else if (language == "js")
+        mg = new JSMsgGroup();
+    else
         print_prompt(argv[0]);
+    if (mg)
+    {
+        mg->parse(root);
+        string source = mg->create_code_string();
+        writeFile(output_file, source);
+        delete mg;
+    }
     clargs_destroy(h);
     return 0;
 }

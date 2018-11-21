@@ -10,6 +10,8 @@
 
 #define TAB_VALUE  "  "
 #define TB TAB_VALUE
+#define TBTB TB TB
+#define TBTBTB TB TB TB
 
 
 #define RETURN_CODEFORMAT(Tab,TemplateStr, ...) \

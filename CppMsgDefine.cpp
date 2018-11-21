@@ -53,15 +53,15 @@ string CppMsgDefine::create_serialize(const string &tab) {
                                                   "}\n\n"
                                                   "int32_t serialize(std::shared_ptr<Caps> &caps) const {\n"
                                                   TB"if (!caps)\n"
-                                                  TB TB"caps = Caps::new_instance();\n"
+                                                  TBTB"caps = Caps::new_instance();\n"
                                                   TB"caps->write(static_cast<int32_t>(MessageType::TYPE_%s));\n"
                                                   "%s"
-                                                  TB"return caps;\n"
+                                                  TB"return CAPS_SUCCESS;\n"
                                                   "}\n\n";
     string field_serialize;
     for(auto &field : fields)
         field_serialize += field->create_serialize_function(TB);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Serialize, msg_name.c_str(), field_serialize.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Serialize, msg_name.c_str(), field_serialize.c_str(), msg_name.c_str(), field_serialize.c_str());
 }
 
 string CppMsgDefine::create_deserialize(const string &tab) {
@@ -79,7 +79,7 @@ string CppMsgDefine::create_deserialize(const string &tab) {
     string field_deserialize;
     for(auto &field : fields)
         field_deserialize += field->create_deserialize_function(TB);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, field_deserialize.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, field_deserialize.c_str(), field_deserialize.c_str());
 }
 
 

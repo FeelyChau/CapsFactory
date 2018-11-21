@@ -138,9 +138,9 @@ const string CppFieldDefine::create_deserialize_function(const string &tab) {
                                                                               "for(int32_t i = 0; i < array_size_%s;++i) {\n"
                                                                               TB"std::shared_ptr<Caps> c;\n"
                                                                               TB"if (caps->read(c) == CAPS_SUCCESS && c) {\n"
-                                                                              TB TB"_%s.emplace_back();\n"
-                                                                              TB TB"int32_t d_rst = _%s.back().deserialize_for_caps_obj(c);\n"
-                                                                              TB TB"if (d_rst != CAPS_SUCCESS) return d_rst;\n"
+                                                                              TBTB"_%s.emplace_back();\n"
+                                                                              TBTB"int32_t d_rst = _%s.back().deserialize_for_caps_obj(c);\n"
+                                                                              TBTB"if (d_rst != CAPS_SUCCESS) return d_rst;\n"
                                                                               TB"}\n"
                                                                               "}\n";
             RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_User_Define, name.c_str(), name.c_str(),

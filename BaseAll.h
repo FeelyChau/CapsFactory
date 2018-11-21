@@ -86,6 +86,7 @@ protected:
 public:
     BaseMsgGroup() = default;
     virtual ~BaseMsgGroup(){};
+
     bool parse(cJSON *root);
     virtual string create_code_string() = 0;
 };
