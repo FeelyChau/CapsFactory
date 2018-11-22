@@ -43,12 +43,12 @@ string CppMsgGroup::create_code_string() {
         if (enum_content.length() == 0)
         {
             enum_content = "TYPE_";
-            enum_content += msg->get_msg_name() + " = 1111";
+            enum_content += msg->get_msg_name_upper() + " = 1111";
         }
         else
         {
             enum_content += ", TYPE_";
-            enum_content += msg->get_msg_name();
+            enum_content += msg->get_msg_name_upper();
         }
     }
     enum_content += ", TYPE_UNKNOWN";

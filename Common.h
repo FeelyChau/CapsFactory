@@ -15,7 +15,7 @@
 
 
 #define RETURN_CODEFORMAT(Tab,TemplateStr, ...) \
-char code[10000];\
+char code[500000];\
 snprintf(code, sizeof(code), TemplateStr, __VA_ARGS__);\
 return Common::add_tab(code, Tab)
 
@@ -23,6 +23,8 @@ class Common {
 public:
     static std::string add_tab(const char *str, const char *tab);
     static std::string camel_case(const char *str);
+    static std::string head_upcase(const char *str);
+    static std::string to_upper(const char* s);
 };
 
 

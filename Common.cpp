@@ -55,3 +55,39 @@ std::string Common::camel_case(const char *str)
     }
     return rst;
 }
+
+std::string Common::head_upcase(const char *str) {
+
+    std::string rst;
+    if (*str != '\0')
+    {
+        if (*(str + 1) >= 'a' && *(str + 1) <= 'z')
+        {
+            rst.push_back((char)std::toupper(*str));
+        }
+        else if (*str == '_' && *(str + 1) >= 'a' && *(str + 1) <= 'z')
+        {
+            rst.push_back((char)std::toupper(*str + 1));
+            str++;
+        }
+        str++;
+    }
+    while(*str != '\0')
+    {
+        if (*str == '_' && *(str + 1) >= 'a' && *(str + 1) <= 'z')
+        {
+            str++;
+            rst.push_back((char)toupper(*str));
+        }
+        else
+            rst.push_back(*str);
+        str++;
+    }
+    return rst;
+}
+
+std::string Common::to_upper(const char *s) {
+    std::string result = s;
+    std::transform(result.begin(), result.end(), result.begin(), ::toupper);
+    return result;
+}

@@ -52,13 +52,18 @@ protected:
     string user_define_type_name;
     bool optional = false;
     bool repeated = false;
+    string camel_name;
+    string head_up_name;
 };
 
 
 class BaseMsgDefine {
 protected:
     string msg_name;
+    string msg_name_upper;
 public:
+    const string &get_msg_name_upper() const;
+
     const string &get_msg_name() const;
 
     const vector<shared_ptr<BaseFieldDefine>> &get_fields() const;

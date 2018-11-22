@@ -41,7 +41,7 @@ string JSMsgDefine::create_code_string(const string &tab) {
 }
 
 string JSMsgDefine::create_serialize(const string &tab) {
-    static const char* const Template_Serialize = "function serialize() {\n"
+    static const char* const Template_Serialize = "serialize() {\n"
                                                   TB"var caps = new Caps();\n"
                                                   TB"caps.writeInt32(MessageType.TYPE_%s)\n"
                                                   "%s\n"
@@ -50,15 +50,14 @@ string JSMsgDefine::create_serialize(const string &tab) {
     string field_function_str;
     for(auto &field : fields)
         field_function_str += field->create_serialize_function(TB);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Serialize, msg_name.c_str(), field_function_str.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Serialize, msg_name_upper.c_str(), field_function_str.c_str());
 }
 
 string JSMsgDefine::create_deserialize(const string &tab) {
     static const char* const Template_Deserialize =
-            "function deserialize(caps) {\n"
-            TB"var index = 0;\n"
-            TB"var t = caps.get(index++)\n"
-            TB"if (typeof t != \"number\" || t != MessageType.TYPE_%s)\n"
+            "deserialize(caps) {\n"
+            TB"var t = caps.readInt32()\n"
+            TB"if (t != MessageType.TYPE_%s)\n"
             TBTB"return false\n"
             "%s\n"
             TB"return true;\n"
@@ -66,11 +65,11 @@ string JSMsgDefine::create_deserialize(const string &tab) {
     string field_function_str;
     for(auto &field : fields)
         field_function_str += field->create_deserialize_function(TB);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, msg_name.c_str(), field_function_str.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, msg_name_upper.c_str(), field_function_str.c_str());
 }
 
 string JSMsgDefine::create_serialize_for_caps_obj(const string &tab) {
-    static const char* const Template_Serialize = "function serialize_for_caps_obj() {\n"
+    static const char* const Template_Serialize = "serializeForCapsObj() {\n"
                                                   TB"var caps = new Caps();\n"
                                                   "%s\n"
                                                   TB"return caps;\n"
@@ -83,8 +82,7 @@ string JSMsgDefine::create_serialize_for_caps_obj(const string &tab) {
 
 string JSMsgDefine::create_deserialize_for_caps_obj(const string &tab) {
     static const char* const Template_Deserialize =
-            "function deserialize_for_caps_obj(caps) {\n"
-            TB"var index = 0;\n"
+            "deserializeForCapsObj(caps) {\n"
             "%s\n"
             TB"return true;\n"
             "}\n\n";

@@ -4,13 +4,18 @@
 
 #include "BaseAll.h"
 #include <iostream>
+#include "Common.h"
 
 bool BaseFieldDefine::parse(cJSON *root) {
     if (root->type != cJSON_Object)
         return false;
     cJSON * name = cJSON_GetObjectItem(root, "Name");
     if (name && name->type == cJSON_String)
+    {
         this->name = name->valuestring;
+        camel_name = Common::camel_case(this->name.c_str());
+        head_up_name = Common::head_upcase(this->name.c_str());
+    }
     else
         return false;
 
@@ -109,7 +114,10 @@ bool BaseMsgDefine::parse(cJSON *root) {
         return false;
     cJSON * name = cJSON_GetObjectItem(root, "MsgName");
     if (name && name->type == cJSON_String)
+    {
         this->msg_name = name->valuestring;
+        this->msg_name_upper = Common::to_upper(name->valuestring);
+    }
     else
         return false;
 
@@ -135,6 +143,10 @@ const string &BaseMsgDefine::get_msg_name() const {
 
 const vector<shared_ptr<BaseFieldDefine>> &BaseMsgDefine::get_fields() const {
     return fields;
+}
+
+const string &BaseMsgDefine::get_msg_name_upper() const {
+    return msg_name_upper;
 }
 
 

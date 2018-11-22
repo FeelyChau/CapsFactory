@@ -6,8 +6,8 @@
 #define CAPSFACTORY_JSFIELDDEFINE_H
 #include "BaseAll.h"
 
-const char * const FieldJSTypeStr[] = {"Caps.STRING", "Caps.INT32", "Caps.UINT32", "Caps.INT64", "Caps.UINT64", "Caps.FLOAT", "Caps.DOUBLE", "Caps.OBJECT"};
-const char * const FieldJSWriterFunction[] = {"write", "writeInt32", "xxxx", "WriteInt64", "xxxxx", "writeFloat", "WriteDouble", "write"};
+const char * const FieldJSWriterFunction[] = {"writeString", "writeInt32", "writeUInt32", "WriteInt64", "xxxxx", "writeFloat", "WriteDouble", "writeCaps"};
+const char * const FieldJSReadFunction[] = {"readString", "readInt32", "readUInt32", "readInt64", "xxxxx", "readFloat", "readDouble", "readCaps"};
 const char * const FieldJSTypeDefault[] = {"\"\"", "0", "0", "0", "0", "0.0", "0.0", "{}"};
 const char * const FieldJSTypeOf[] = {"string", "number", "number", "number", "number", "number", "number", "object"};
 

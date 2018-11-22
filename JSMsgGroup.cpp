@@ -12,17 +12,12 @@ JSMsgGroup::~JSMsgGroup() {
 
 
 string JSMsgGroup::create_code_string() {
-    static const char* const Template_All = "namespace %s {\n"
+    static const char* const Template_All = "\"use strict\"\n"
                                             "%s\n"
                                             "%s\n"
-                                            "}\n";
+                                            "\n";
     string rst;
 
-    if (ns.length() > 0)
-    {
-        rst += "namespace ";
-        rst += ns + "{\n";
-    }
     //pre-defined message class, and message enum
     string enum_content;
 
@@ -32,33 +27,28 @@ string JSMsgGroup::create_code_string() {
     {
         if (enum_content.length() == 0)
         {
-            enum_content = "TYPE_";
-            enum_content += msg_define[i]->get_msg_name() + " = 1111";
+            enum_content = TB "TYPE_";
+            enum_content += msg_define[i]->get_msg_name_upper() + " : 1111";
         }
         else
         {
-            enum_content += ", TYPE_";
-            enum_content += msg_define[i]->get_msg_name() + " = ";
+            enum_content += ",\n" TB "TYPE_";
+            enum_content += msg_define[i]->get_msg_name_upper() + " : ";
             enum_content += std::to_string(1111 + i);
         }
     }
-    enum_content += ", TYPE_UNKNOWN = ";
+    enum_content += ",\n" TB "TYPE_UNKNOWN : ";
     enum_content += std::to_string(1111 + i);
-    rst += "\n"
-    TB "//enum of message type\n";
-    rst += "  var MessageType {";
+    enum_content += "\n";
+    rst += "\n//enum of message type\n";
+    rst += "const MessageType = {\n";
     rst += enum_content + "};\n";
 
 
 
     for(auto &msg : msg_define)
-        rst += msg->create_code_string(TB);
+        rst += msg->create_code_string("");
 
-    if (ns.length() > 0)
-    {
-
-        rst += "}";
-    }
     return rst;
 }
 

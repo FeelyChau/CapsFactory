@@ -44,7 +44,7 @@ string JavaMsgDefine::create_serialize(const string &tab) {
                                                   TB"Caps caps = Caps::new_instance();\n"
                                                   TB"caps.write(MessageType.TYPE_%s.value);\n"
                                                   "%s"
-                                                  TB"return caps->serialize(buf);\n"
+                                                  TB"return caps.serialize(buf);\n"
                                                   "}\n\n";
     string field_serialize;
     for(auto &field : fields)

@@ -16,7 +16,7 @@ string JavaMsgGroup::create_code_string() {
                                            "  if (Caps::parse(buff, buff_len, caps) != CAPS_SUCCESS)\n"
                                            "    goto ERROR;\n"
                                            "  int32_t msg_type;\n"
-                                           "  if (caps->read(msg_type) != CAPS_SUCCESS)\n"
+                                           "  if (caps.read(msg_type) != CAPS_SUCCESS)\n"
                                            "    goto ERROR;\n"
                                            "  return static_cast<MessageType>(msg_type);\n"
                                            "ERROR:\n"
@@ -39,12 +39,12 @@ string JavaMsgGroup::create_code_string() {
         if (enum_content.length() == 0)
         {
             enum_content = "TYPE_";
-            enum_content += msg->get_msg_name();
+            enum_content += msg->get_msg_name_upper();
         }
         else
         {
             enum_content += ", TYPE_";
-            enum_content += msg->get_msg_name();
+            enum_content += msg->get_msg_name_upper();
         }
     }
     enum_content += ", TYPE_UNKNOWN";
