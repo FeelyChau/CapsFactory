@@ -11,7 +11,9 @@ JSMsgDefine::~JSMsgDefine() {
 }
 
 string JSMsgDefine::create_code_string(const string &tab) {
-    static const char* const Template_Msg_Class = "class %s {\n"
+    string class_comment = comment.length() == 0 ? "" : "// " + comment;
+    static const char* const Template_Msg_Class = "\n%s\n"
+                                                  "class %s {\n"
                                                   TB"constructor (){\n"
                                                   "%s\n"
                                                   TB"}\n\n"
@@ -37,11 +39,14 @@ string JSMsgDefine::create_code_string(const string &tab) {
     string serialize_for_caps_obj = create_serialize_for_caps_obj(TAB_VALUE);
     //deserialize for caps obj
     string deserialize_for_caps_obj = create_deserialize_for_caps_obj(TAB_VALUE);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Msg_Class, msg_name.c_str(), members.c_str(), (getter + setter + serialize + deserialize + serialize_for_caps_obj + deserialize_for_caps_obj).c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Msg_Class, class_comment.c_str(), msg_name.c_str(), members.c_str(), (getter + setter + serialize + deserialize + serialize_for_caps_obj + deserialize_for_caps_obj).c_str());
 }
 
 string JSMsgDefine::create_serialize(const string &tab) {
-    static const char* const Template_Serialize = "serialize() {\n"
+    static const char* const Template_Serialize = "\n/*\n"
+                                                  " * serialize this object as caps\n"
+                                                  "*/\n"
+                                                  "serialize() {\n"
                                                   TB"var caps = new Caps();\n"
                                                   TB"caps.writeInt32(MessageType.TYPE_%s)\n"
                                                   "%s\n"
@@ -55,6 +60,9 @@ string JSMsgDefine::create_serialize(const string &tab) {
 
 string JSMsgDefine::create_deserialize(const string &tab) {
     static const char* const Template_Deserialize =
+            "\n/*\n"
+            " * deserialize this object from caps\n"
+            "*/\n"
             "deserialize(caps) {\n"
             TB"var t = caps.readInt32()\n"
             TB"if (t != MessageType.TYPE_%s)\n"
@@ -69,7 +77,10 @@ string JSMsgDefine::create_deserialize(const string &tab) {
 }
 
 string JSMsgDefine::create_serialize_for_caps_obj(const string &tab) {
-    static const char* const Template_Serialize = "serializeForCapsObj() {\n"
+    static const char* const Template_Serialize = "\n/*\n"
+                                                  " * serialize this object as caps (without message type)\n"
+                                                  "*/\n"
+                                                  "serializeForCapsObj() {\n"
                                                   TB"var caps = new Caps();\n"
                                                   "%s\n"
                                                   TB"return caps;\n"
@@ -82,6 +93,9 @@ string JSMsgDefine::create_serialize_for_caps_obj(const string &tab) {
 
 string JSMsgDefine::create_deserialize_for_caps_obj(const string &tab) {
     static const char* const Template_Deserialize =
+            "\n/*\n"
+            " * deserialize this object from caps (without message type)\n"
+            "*/\n"
             "deserializeForCapsObj(caps) {\n"
             "%s\n"
             TB"return true;\n"

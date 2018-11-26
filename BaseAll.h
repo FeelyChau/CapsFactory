@@ -54,6 +54,7 @@ protected:
     bool repeated = false;
     string camel_name;
     string head_up_name;
+    string comment;
 };
 
 
@@ -61,6 +62,7 @@ class BaseMsgDefine {
 protected:
     string msg_name;
     string msg_name_upper;
+    string comment;
 public:
     const string &get_msg_name_upper() const;
 
@@ -88,6 +90,7 @@ protected:
     string ns;
     vector<std::shared_ptr<BaseMsgDefine>> msg_define;
     virtual std::shared_ptr<BaseMsgDefine> new_msg_define() = 0;
+    string comment;
 public:
     BaseMsgGroup() = default;
     virtual ~BaseMsgGroup(){};

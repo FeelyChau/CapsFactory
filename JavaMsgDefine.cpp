@@ -40,7 +40,7 @@ string JavaMsgDefine::create_code_string(const string &tab) {
 }
 
 string JavaMsgDefine::create_serialize(const string &tab) {
-    static const char* const Template_Serialize = "Integer serialize(Integer[] buf) {\n"
+    static const char* const Template_Serialize = "\n/*\n * serialize this object as buffer\n */\nInteger serialize(Integer[] buf) {\n"
                                                   TB"Caps caps = Caps::new_instance();\n"
                                                   TB"caps.write(MessageType.TYPE_%s.value);\n"
                                                   "%s"
@@ -53,12 +53,12 @@ string JavaMsgDefine::create_serialize(const string &tab) {
 }
 
 string JavaMsgDefine::create_deserialize(const string &tab) {
-    static const char* const Template_Deserialize = "Integer deserialize(Integer[] buf) {\n"
+    static const char* const Template_Deserialize = "\n/*\n * deserialize this object from buffer\n */\nbool deserialize(Integer[] buf) {\n"
                                                     TB"Caps caps;\n"
-                                                    TB"Integer pRst = Caps::parse(buf, ref caps);\n"
-                                                    TB"if(pRst != CAPS_SUCCESS) return pRst;\n"
+                                                    TB"caps = Caps::parse(buf);\n"
+                                                    TB"if(caps == null) return false;\n"
                                                     "%s"
-                                                    TB"return CAPS_SUCCESS;\n"
+                                                    TB"return true;\n"
                                                     "}\n\n";
     string field_deserialize;
     for(auto &field : fields)
@@ -69,10 +69,10 @@ string JavaMsgDefine::create_deserialize(const string &tab) {
 
 string JavaMsgDefine::create_serialize_for_caps_obj(const string &tab)
 {
-    static const char * const Template_SerializeForCapsObj = "Integer serializeForCapsObj(ref Caps caps) {\n"
+    static const char * const Template_SerializeForCapsObj = "\n/*\n * serialize this object as caps (without message type)\n */\nCaps serializeForCapsObj() {\n"
                                                              TB"caps = Caps::new_instance();\n"
                                                              "%s"
-                                                             TB"return CAPS_SUCCESS;\n"
+                                                             TB"return caps;\n"
                                                              "}\n\n";
 
     string field_function_str;

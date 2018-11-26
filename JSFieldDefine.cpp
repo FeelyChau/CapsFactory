@@ -10,18 +10,19 @@ JSFieldDefine::~JSFieldDefine() {
 }
 
 const string JSFieldDefine::create_get_function(const string &tab) {
-    static const char* const Template_Getter = "get%s () {\n"
+    string getter_comment = comment.length() == 0 ? "" : "// getter " + comment;
+    static const char* const Template_Getter = "\n%s\nget%s () {\n"
                                                TB"return this.%s\n"
                                                "}\n";
-    RETURN_CODEFORMAT(tab.c_str(), Template_Getter, head_up_name.c_str(), camel_name.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Getter, getter_comment.c_str(), head_up_name.c_str(), camel_name.c_str());
 }
 
 const string JSFieldDefine::create_set_function(const string &tab) {
-
-    static const char* const Template_Getter = "set%s (v) {\n"
+    string setter_comment = comment.length() == 0 ? "" : "// setter " + comment;
+    static const char* const Template_Getter = "\n%s\nset%s (v) {\n"
                                                TB"this.%s = v\n"
                                                "}\n";
-    RETURN_CODEFORMAT(tab.c_str(), Template_Getter, head_up_name.c_str(), camel_name.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Getter, setter_comment.c_str(), head_up_name.c_str(), camel_name.c_str());
 }
 
 const string JSFieldDefine::create_serialize_function(const string &tab) {

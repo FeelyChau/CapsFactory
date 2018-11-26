@@ -47,12 +47,14 @@ bool BaseFieldDefine::parse(cJSON *root) {
     else
         return false;
 
-
+    cJSON * comment = cJSON_GetObjectItem(root, "Comment");
+    if (comment)
+        this->comment = comment->valuestring;
 
     cJSON * optional = cJSON_GetObjectItem(root, "Optional");
     if (!optional)
     {
-        cout<<"[Optional] of field ["<<this->name<<"] is invalid(defalue 'false')"<<endl;
+        //cout<<"[Optional] of field ["<<this->name<<"] is invalid(defalue 'false')"<<endl;
         this->optional = false;
     }
     else if (optional->type == cJSON_False)
@@ -63,7 +65,7 @@ bool BaseFieldDefine::parse(cJSON *root) {
     cJSON * repeated = cJSON_GetObjectItem(root, "Repeated");
     if (!repeated)
     {
-        cout<<"[repeated] of field ["<<this->name<<"] is invalid(defalue 'false')"<<endl;
+        //cout<<"[repeated] of field ["<<this->name<<"] is invalid(defalue 'false')"<<endl;
         this->repeated = false;
     }
     else if (repeated->type == cJSON_False)
@@ -121,6 +123,10 @@ bool BaseMsgDefine::parse(cJSON *root) {
     else
         return false;
 
+    cJSON * comment = cJSON_GetObjectItem(root, "Comment");
+    if (comment && comment->type == cJSON_String)
+        this->comment = comment->valuestring;
+
     cJSON * members = cJSON_GetObjectItem(root, "Fields");
     if (!members)
         return false;
@@ -158,6 +164,10 @@ bool BaseMsgGroup::parse(cJSON *root) {
         this->ns = ns->valuestring;
     else
         this->ns = "";
+
+    cJSON * comment = cJSON_GetObjectItem(root, "Comment");
+    if (comment && comment->type == cJSON_String)
+        this->comment = comment->valuestring;
 
     cJSON * msgs = cJSON_GetObjectItem(root, "Msg");
     if (msgs && msgs->type == cJSON_Array)

@@ -8,75 +8,77 @@
 #include "Common.h"
 
 
-
-
 const string CppFieldDefine::create_get_function(const string &tab) {
+    string getter_commont;
+    getter_commont = comment.length() == 0 ? "" : "//getter " + comment;
     if (repeated) {
         if (field_type == FieldType::USERDEFINE) {
-            static const char *const Template_TypeName_Array_User_Define = "const std::vector<%s>& get_%s() const { return _%s; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_User_Define, user_define_type_name.c_str(),
+            static const char *const Template_TypeName_Array_User_Define = "\n%s\nconst std::vector<%s>& get_%s() const { return _%s; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_User_Define, getter_commont.c_str(), user_define_type_name.c_str(),
                               name.c_str(), name.c_str());
         } else if (field_type == FieldType::STRING) {
-            static const char *const Template_TypeName_Array_String = "const std::vector<std::string>& get_%s() const { return _%s; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_String, name.c_str(), name.c_str());
+            static const char *const Template_TypeName_Array_String = "\n%s\nconst std::vector<std::string>& get_%s() const { return _%s; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_String, getter_commont.c_str(), name.c_str(), name.c_str());
         } else {
-            static const char *const Template_TypeName_Array_Inner = "const std::vector<%s>& get_%s() const { return _%s; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_Inner, FieldTypeStr[static_cast<int>(field_type)],
+            static const char *const Template_TypeName_Array_Inner = "\n%s\nconst std::vector<%s>& get_%s() const { return _%s; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_Inner, getter_commont.c_str(), FieldTypeStr[static_cast<int>(field_type)],
                               name.c_str(), name.c_str());
         }
     } else {
         if (field_type == FieldType::USERDEFINE) {
-            static const char *const Template_TypeName_User_Define = "const %s & get_%s() const { return _%s; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define, user_define_type_name.c_str(), name.c_str(),
+            static const char *const Template_TypeName_User_Define = "\n%s\nconst %s & get_%s() const { return _%s; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define, getter_commont.c_str(), user_define_type_name.c_str(), name.c_str(),
                               name.c_str());
         } else if (field_type == FieldType::STRING) {
-            static const char *const Template_TypeName_String = "const std::string& get_%s() const { return _%s; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_String, name.c_str(), name.c_str());
+            static const char *const Template_TypeName_String = "\n%s\nconst std::string& get_%s() const { return _%s; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_String, getter_commont.c_str(), name.c_str(), name.c_str());
         } else {
-            static const char *const Template_TypeName_Inner = "%s get_%s() const { return _%s; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Inner, FieldTypeStr[static_cast<int>(field_type)],
+            static const char *const Template_TypeName_Inner = "\n%s\n%s get_%s() const { return _%s; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Inner, getter_commont.c_str(), FieldTypeStr[static_cast<int>(field_type)],
                               name.c_str(), name.c_str());
         }
     }
 }
 
 const string CppFieldDefine::create_set_function(const string &tab) {
+    string setter_commont;
+    setter_commont = comment.length() == 0 ? "" : "//setter " + comment;
     if (repeated)
     {
         if (field_type == FieldType::USERDEFINE)
         {
-            static const char *const Template_TypeName_Array_User_Define_Set = "void set_%s(const std::vector<%s> &v) { _%s = v; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_User_Define_Set, name.c_str(), user_define_type_name.c_str(), name.c_str());
+            static const char *const Template_TypeName_Array_User_Define_Set = "\n%s\nvoid set_%s(const std::vector<%s> &v) { _%s = v; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_User_Define_Set, setter_commont.c_str(), name.c_str(), user_define_type_name.c_str(), name.c_str());
         }
 
         else if (field_type == FieldType::STRING)
         {
-            static const char *const Template_TypeName_Array_String_Set = "void set_%s(const std::vector<std::string> &v) { _%s = v; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_String_Set, name.c_str(), name.c_str());
+            static const char *const Template_TypeName_Array_String_Set = "\n%s\nvoid set_%s(const std::vector<std::string> &v) { _%s = v; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_String_Set, setter_commont.c_str(), name.c_str(), name.c_str());
         }
         else
         {
-            static const char *const Template_TypeName_Array_Inner_Set = "void set_%s(const std::vector<%s> &v) { _%s = v; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_Inner_Set, name.c_str(), FieldTypeStr[static_cast<int>(field_type)], name.c_str());
+            static const char *const Template_TypeName_Array_Inner_Set = "\n%s\nvoid set_%s(const std::vector<%s> &v) { _%s = v; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_Inner_Set, setter_commont.c_str(), name.c_str(), FieldTypeStr[static_cast<int>(field_type)], name.c_str());
         }
     }
     else
     {
         if (field_type == FieldType::USERDEFINE)
         {
-            static const char *const Template_TypeName_User_Define_Set = "void set_%s(const %s &v) { _%s = v; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define_Set, name.c_str(), user_define_type_name.c_str(), name.c_str());
+            static const char *const Template_TypeName_User_Define_Set = "\n%s\nvoid set_%s(const %s &v) { _%s = v; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define_Set, setter_commont.c_str(), name.c_str(), user_define_type_name.c_str(), name.c_str());
         }
 
         else if (field_type == FieldType::STRING)
         {
-            static const char *const Template_TypeName_String_Set = "void set_%s(const std::string &v) { _%s = v; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_String_Set, name.c_str(), name.c_str());
+            static const char *const Template_TypeName_String_Set = "\n%s\nvoid set_%s(const std::string &v) { _%s = v; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_String_Set, setter_commont.c_str(), name.c_str(), name.c_str());
         }
         else
         {
-            static const char *const Template_TypeName_Inner_Set = "void set_%s(%s v) { _%s = v; }\n";
-            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Inner_Set, name.c_str(), FieldTypeStr[static_cast<int>(field_type)], name.c_str());
+            static const char *const Template_TypeName_Inner_Set = "\n%s\nvoid set_%s(%s v) { _%s = v; }\n";
+            RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Inner_Set, setter_commont.c_str(), name.c_str(), FieldTypeStr[static_cast<int>(field_type)], name.c_str());
         }
     }
 }

@@ -15,12 +15,14 @@ string JSMsgGroup::create_code_string() {
     static const char* const Template_All = "\"use strict\"\n"
                                             "%s\n"
                                             "%s\n"
+                                            " \n"
+                                            "%s"
                                             "\n";
     string rst;
 
     //pre-defined message class, and message enum
+    string enum_define;
     string enum_content;
-
     int index_start = 1111;
     int i = 0;
     for(; i < msg_define.size(); ++i)
@@ -40,15 +42,19 @@ string JSMsgGroup::create_code_string() {
     enum_content += ",\n" TB "TYPE_UNKNOWN : ";
     enum_content += std::to_string(1111 + i);
     enum_content += "\n";
-    rst += "\n//enum of message type\n";
-    rst += "const MessageType = {\n";
-    rst += enum_content + "};\n";
+    enum_define += "\n//enum of message type\n";
+    enum_define += "const MessageType = {\n";
+    enum_define += enum_content + "};\n";
 
-
+    string class_define;
 
     for(auto &msg : msg_define)
-        rst += msg->create_code_string("");
+        class_define += msg->create_code_string("");
 
+    string exports;
+    for(auto &msg : msg_define)
+        exports += "exports." + msg->get_msg_name() + " = " + msg->get_msg_name() + "\n";
+    RETURN_CODEFORMAT("", Template_All, enum_define.c_str(), class_define.c_str(), exports.c_str());
     return rst;
 }
 

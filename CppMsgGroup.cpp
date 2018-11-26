@@ -13,16 +13,22 @@
 
 
 string CppMsgGroup::create_code_string() {
-    static const char* const TemplateStr = "MessageType get_msg_type(const unsigned char * buff, int32_t buff_len, std::shared_ptr<Caps> &caps) {\n"
-                                    "  if (Caps::parse(buff, buff_len, caps) != CAPS_SUCCESS)\n"
-                                    "    goto ERROR;\n"
-                                    "  int32_t msg_type;\n"
-                                    "  if (caps->read(msg_type) != CAPS_SUCCESS)\n"
-                                    "    goto ERROR;\n"
-                                    "  return static_cast<MessageType>(msg_type);\n"
-                                    "ERROR:\n"
-                                    "  return MessageType::TYPE_UNKNOWN;\n"
-                                    "}\n";
+    static const char* const TemplateStr = "\n/*\n * you should call this function when you got message package,\n"
+                                           " * [in] buff: the packgae buffer\n"
+                                           " * [in] buffer_len: then buffer length\n"
+                                           " * [out] caps: the caps object contain message, but without message type\n"
+                                           " * return message type if success, else return MessageType::TYPE_UNKNOWN\n"
+                                           " */"
+                                           "MessageType get_msg_type(const unsigned char * buff, int32_t buff_len, std::shared_ptr<Caps> &caps) {\n"
+                                           "  if (Caps::parse(buff, buff_len, caps) != CAPS_SUCCESS)\n"
+                                           "    goto ERROR;\n"
+                                           "  int32_t msg_type;\n"
+                                           "  if (caps.read(msg_type) != CAPS_SUCCESS)\n"
+                                           "    goto ERROR;\n"
+                                           "  return static_cast<MessageType>(msg_type);\n"
+                                           "ERROR:\n"
+                                           "  return MessageType::TYPE_UNKNOWN;\n"
+                                           "}\n";
     string rst;
     rst += "#ifndef _CAPSMESSAGE_H\n";
     rst += "#define _CAPSMESSAGE_H\n";
