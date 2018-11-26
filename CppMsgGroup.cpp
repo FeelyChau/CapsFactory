@@ -23,7 +23,7 @@ string CppMsgGroup::create_code_string() {
                                            "  if (Caps::parse(buff, buff_len, caps) != CAPS_SUCCESS)\n"
                                            "    goto ERROR;\n"
                                            "  int32_t msg_type;\n"
-                                           "  if (caps.read(msg_type) != CAPS_SUCCESS)\n"
+                                           "  if (caps->read(msg_type) != CAPS_SUCCESS)\n"
                                            "    goto ERROR;\n"
                                            "  return static_cast<MessageType>(msg_type);\n"
                                            "ERROR:\n"
