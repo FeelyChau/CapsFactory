@@ -54,8 +54,8 @@ string JSMsgGroup::create_code_string() {
     string exports;
     for(auto &msg : msg_define)
         exports += "exports." + msg->get_msg_name() + " = " + msg->get_msg_name() + "\n";
+    exports += "exports.MessageType = MessageType;\n";
     RETURN_CODEFORMAT("", Template_All, enum_define.c_str(), class_define.c_str(), exports.c_str());
-    return rst;
 }
 
 shared_ptr<BaseMsgDefine> JSMsgGroup::new_msg_define() {

@@ -12,6 +12,9 @@ string CppMsgDefine::create_code_string(const string &tab) {
                                                   "private:\n"
                                                   "%s"
                                                   "public:\n"
+                                                  TB"static std::shared_ptr<%s> create() {\n"
+                                                  TB2"return std::make_shared<%s>();\n"
+                                                  TB"}\n"
                                                   "%s"
                                                   "};\n\n";
 
@@ -35,7 +38,8 @@ string CppMsgDefine::create_code_string(const string &tab) {
     string serialize_for_caps_obj = create_serialize_for_caps_obj(TAB_VALUE);
     //deserialize for caps obj
     string deserialize_for_caps_obj = create_deserialize_for_caps_obj(TAB_VALUE);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Msg_Class, msg_name.c_str(), members.c_str(), (getter + setter + serialize + deserialize + serialize_for_caps_obj + deserialize_for_caps_obj).c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Msg_Class, msg_name.c_str(), members.c_str(), msg_name.c_str(),
+            msg_name.c_str(), (getter + setter + serialize + deserialize + serialize_for_caps_obj + deserialize_for_caps_obj).c_str());
 }
 
 
@@ -56,7 +60,7 @@ string CppMsgDefine::create_serialize(const string &tab) {
                                                   "}\n\n"
                                                   "\n/*\n * deserialize this object as caps (with message type)\n */\nint32_t serialize(std::shared_ptr<Caps> &caps) const {\n"
                                                   TB"if (!caps)\n"
-                                                  TBTB"caps = Caps::new_instance();\n"
+                                                  TB2"caps = Caps::new_instance();\n"
                                                   TB"caps->write(static_cast<int32_t>(MessageType::TYPE_%s));\n"
                                                   "%s"
                                                   TB"return CAPS_SUCCESS;\n"
@@ -69,14 +73,16 @@ string CppMsgDefine::create_serialize(const string &tab) {
 }
 
 string CppMsgDefine::create_deserialize(const string &tab) {
-    static const char* const Template_Deserialize = "\n/*\n * deserialize this object from buffer\n */\nint32_t deserialize(void* buf, uint32_t bufsize) {\n"
+    static const char* const Template_Deserialize = "\n/*\n * deserialize this object from buffer\n */\n"
+                                                    "int32_t deserialize(void* buf, uint32_t bufSize) {\n"
                                                     TB"std::shared_ptr<Caps> caps;\n"
-                                                    TB"int32_t p_rst = Caps::parse(buf, bufsize, caps);\n"
-                                                    TB"if(p_rst != CAPS_SUCCESS) return p_rst;\n"
+                                                    TB"int32_t pRst = Caps::parse(buf, bufSize, caps);\n"
+                                                    TB"if(pRst != CAPS_SUCCESS) return pRst;\n"
                                                     "%s"
                                                     TB"return CAPS_SUCCESS;\n"
                                                     "}\n\n"
-                                                    "\n/*\n * deserialize this object from caps (with message type)\n */\nint32_t deserialize(std::shared_ptr<Caps> &caps) {\n"
+                                                    "\n/*\n * deserialize this object from caps (with message type)\n */\n"
+                                                    "int32_t deserialize(std::shared_ptr<Caps> &caps) {\n"
                                                     "%s"
                                                     TB"return CAPS_SUCCESS;\n"
                                                     "}\n\n";
@@ -89,7 +95,8 @@ string CppMsgDefine::create_deserialize(const string &tab) {
 
 string CppMsgDefine::create_serialize_for_caps_obj(const string &tab)
 {
-    static const char * const Template_SerializeForCapsObj = "\n/*\n * serialize this object as caps (without message type)\n */\nint32_t serialize_for_caps_obj(std::shared_ptr<Caps> &caps) const {\n"
+    static const char * const Template_SerializeForCapsObj = "\n/*\n * serialize this object as caps (without message type)\n */\n"
+                                                             "int32_t serializeForCapsObj(std::shared_ptr<Caps> &caps) const {\n"
                                                              TB"caps = Caps::new_instance();\n"
                                                              "%s"
                                                              TB"return CAPS_SUCCESS;\n"
@@ -102,7 +109,8 @@ string CppMsgDefine::create_serialize_for_caps_obj(const string &tab)
 
 string CppMsgDefine::create_deserialize_for_caps_obj(const string &tab)
 {
-    static const char * const Template_DeserializeForCapsObj = "\n/*\n * deserialize this object from caps (without message type)\n */\nint32_t deserialize_for_caps_obj(std::shared_ptr<Caps> &caps) {\n"
+    static const char * const Template_DeserializeForCapsObj = "\n/*\n * deserialize this object from caps (without message type)\n */\n"
+                                                               "int32_t deserializeForCapsObj(std::shared_ptr<Caps> &caps) {\n"
                                                                "%s"
                                                                TB"return CAPS_SUCCESS;\n"
                                                                "}\n\n";

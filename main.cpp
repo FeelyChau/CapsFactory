@@ -60,9 +60,26 @@ static void print_prompt(const char* progname) {
                               "\t-l [cpp, c, js, java]      set code language(support cpp only for now)";
     printf(form, progname);
 }
+#define FUNC_STRING(v) "\"\\\"" #v "\\\":\\\"%s\\\"\"\n"
+#define FUNC_UINT32(v) "\"\\\"" #v "\\\":%u\""
+#define FUNC_INT32(v) "\"\\\"" #v "\\\":%d\""
+#define FUNC_UINT64(v) "\"\\\"" #v "\\\":%llu\""
+#define FUNC_INT64(v) "\"\\\"" #v "\\\":%lld\""
+#define FUNC_OBJ(v) "\"\\\"" #v "\\\":%s\""
+#define FUNC_ARRAY(v) "\"\\\"" #v "\\\":[%s]\""
 
 
 int main(int argc, char** argv) {
+    char * abc;
+    int64_t a;
+    printf("%s\n", FUNC_STRING(abc));
+    printf("%s\n", FUNC_UINT32(abc));
+    printf("%s\n", FUNC_INT32(abc));
+    printf("%s\n", FUNC_UINT64(abc));
+    printf("%s\n", FUNC_INT64(abc));
+    printf("%s\n", FUNC_OBJ(abc));
+    printf("%s\n", FUNC_ARRAY(abc));
+    printf(FUNC_STRING(abc), "abddddc");
     // parse arguments
     clargs_h h = clargs_parse(argc, argv);
     if (h == 0 || clargs_opt_has(h, "h")) {

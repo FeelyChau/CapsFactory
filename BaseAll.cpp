@@ -73,6 +73,17 @@ bool BaseFieldDefine::parse(cJSON *root) {
     else if (repeated->type == cJSON_True)
         this->repeated = true;
 
+    cJSON * default_value = cJSON_GetObjectItem(root, "Default");
+    if (!default_value)
+    {
+        this->defualt_value = false;
+    }
+    else if (repeated->type == cJSON_False)
+        this->repeated = false;
+    else if (repeated->type == cJSON_True)
+        this->repeated = true;
+
+
     return true;
 }
 

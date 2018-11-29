@@ -28,6 +28,7 @@ public:
 
     virtual const string create_class_member(const string &tab) override;
 
+    const string create_to_json_function(const string &tab) override;
 };
 
 

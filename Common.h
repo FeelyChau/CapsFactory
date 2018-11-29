@@ -10,8 +10,9 @@
 
 #define TAB_VALUE  "  "
 #define TB TAB_VALUE
-#define TBTB TB TB
-#define TBTBTB TB TB TB
+#define TB2 TB TB
+#define TB3 TB TB TB
+#define TB4 TB TB TB TB
 
 
 #define RETURN_CODEFORMAT(Tab,TemplateStr, ...) \

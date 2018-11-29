@@ -11,7 +11,7 @@ JavaMsgDefine::~JavaMsgDefine() {
 }
 
 string JavaMsgDefine::create_code_string(const string &tab) {
-    static const char* const Template_Msg_Class = "class %s {\n"
+    static const char* const Template_Msg_Class = "public class %s {\n"
                                                   "%s"
                                                   "%s"
                                                   "};\n\n";
@@ -40,37 +40,39 @@ string JavaMsgDefine::create_code_string(const string &tab) {
 }
 
 string JavaMsgDefine::create_serialize(const string &tab) {
-    static const char* const Template_Serialize = "\n/*\n * serialize this object as buffer\n */\nInteger serialize(Integer[] buf) {\n"
-                                                  TB"Caps caps = Caps::new_instance();\n"
-                                                  TB"caps.write(MessageType.TYPE_%s.value);\n"
+    static const char* const Template_Serialize = "\n/*\n * serialize this object as buffer\n */\n"
+                                                  "public byte[] serialize(int byteOder) throws CapsException {\n"
+                                                  TB"Caps caps = Caps.create();\n"
+                                                  TB"caps.write(MessageType.TYPE_%s);\n"
                                                   "%s"
-                                                  TB"return caps.serialize(buf);\n"
+                                                  TB"return caps.serialize(byteOder);\n"
                                                   "}\n\n";
     string field_serialize;
     for(auto &field : fields)
         field_serialize += field->create_serialize_function(TB);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Serialize, Common::camel_case(msg_name.c_str()).c_str(), field_serialize.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Serialize, Common::to_upper(msg_name.c_str()).c_str(), field_serialize.c_str());
 }
 
 string JavaMsgDefine::create_deserialize(const string &tab) {
-    static const char* const Template_Deserialize = "\n/*\n * deserialize this object from buffer\n */\nbool deserialize(Integer[] buf) {\n"
-                                                    TB"Caps caps;\n"
-                                                    TB"caps = Caps::parse(buf);\n"
-                                                    TB"if(caps == null) return false;\n"
+    static const char* const Template_Deserialize = "\n/*\n * deserialize this object from buffer\n */\n"
+                                                    "public void deserialize(byte[] buf) throws CapsException {\n"
+                                                    TB"Caps caps = Caps.parse(buf, 0, buf.length);\n"
+                                                    TB"int msgType = caps.readInt();\n"
+                                                    TB"if (msgType != MessageType.TYPE_%s) return;\n"
                                                     "%s"
-                                                    TB"return true;\n"
                                                     "}\n\n";
     string field_deserialize;
     for(auto &field : fields)
         field_deserialize += field->create_deserialize_function(TB);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, field_deserialize.c_str());
+    RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, msg_name_upper.c_str(), field_deserialize.c_str());
 }
 
 
 string JavaMsgDefine::create_serialize_for_caps_obj(const string &tab)
 {
-    static const char * const Template_SerializeForCapsObj = "\n/*\n * serialize this object as caps (without message type)\n */\nCaps serializeForCapsObj() {\n"
-                                                             TB"caps = Caps::new_instance();\n"
+    static const char * const Template_SerializeForCapsObj = "\n/*\n * serialize this object as caps (without message type)\n */\n"
+                                                             "public Caps serializeForCapsObj() throws CapsException {\n"
+                                                             TB"Caps caps = Caps.create();\n"
                                                              "%s"
                                                              TB"return caps;\n"
                                                              "}\n\n";
@@ -83,9 +85,9 @@ string JavaMsgDefine::create_serialize_for_caps_obj(const string &tab)
 
 string JavaMsgDefine::create_deserialize_for_caps_obj(const string &tab)
 {
-    static const char * const Template_DeserializeForCapsObj = "Integer deserializeForCapsObj(ref Caps caps) {\n"
+    static const char * const Template_DeserializeForCapsObj = "\n/*\n * deserialize this object from caps (without message type)\n */\n"
+                                                               "public void deserializeForCapsObj(Caps caps) throws CapsException {\n"
                                                                "%s"
-                                                               TB"return CAPS_SUCCESS;\n"
                                                                "}\n\n";
     string field_deserialize;
     for(auto &field : fields)

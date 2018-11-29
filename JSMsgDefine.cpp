@@ -22,7 +22,7 @@ string JSMsgDefine::create_code_string(const string &tab) {
     //members
     string members;
     for(auto &field : fields)
-        members += field->create_class_member(TBTB);
+        members += field->create_class_member(TB2);
     string getter;
     //field getter
     for(auto &field : fields)
@@ -66,7 +66,7 @@ string JSMsgDefine::create_deserialize(const string &tab) {
             "deserialize(caps) {\n"
             TB"var t = caps.readInt32()\n"
             TB"if (t != MessageType.TYPE_%s)\n"
-            TBTB"return false\n"
+            TB2"return false\n"
             "%s\n"
             TB"return true;\n"
             "}\n\n";

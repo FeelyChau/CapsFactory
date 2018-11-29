@@ -46,9 +46,12 @@ public:
 
     virtual const string create_class_member(const string &tab) = 0;
 
+    virtual const string create_to_json_function(const string &tab) = 0;
+
 protected:
     string name;
     FieldType field_type;
+    string defualt_value;
     string user_define_type_name;
     bool optional = false;
     bool repeated = false;

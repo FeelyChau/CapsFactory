@@ -7,68 +7,47 @@
 #include "Common.h"
 
 std::shared_ptr<BaseMsgDefine> JavaMsgGroup::new_msg_define() {
-    return std::make_shared<JavaMsgDefine>();
+  return std::make_shared<JavaMsgDefine>();
 }
 
 string JavaMsgGroup::create_code_string() {
+  string rst;
+  rst += "package com.rokid.caps." + ns + "\n";
+  rst += "import com.rokid.utils.Caps;\n"
+         "import com.rokid.utils.CapsException;\n"
+         "import java.util.ArrayList;\n"
+         "import java.util.List;\n";
 
-    static const char* const TemplateStr = "\n/*\n * you should call this function when you got message package,\n"
-                                           " * [in] buff: the packgae buffer\n"
-                                           " * [in] buffer_len: then buffer length\n"
-                                           " * [out] caps: the caps object contain message, but without message type\n"
-                                           " * return message type if success, else return MessageType::TYPE_UNKNOWN\n"
-                                           " */"
-                                           "MessageType get_msg_type(const unsigned char * buff, int32_t buff_len, std::shared_ptr<Caps> &caps) {\n"
-                                           "  if (Caps::parse(buff, buff_len, caps) != CAPS_SUCCESS)\n"
-                                           "    goto ERROR;\n"
-                                           "  int32_t msg_type;\n"
-                                           "  if (caps.read(msg_type) != CAPS_SUCCESS)\n"
-                                           "    goto ERROR;\n"
-                                           "  return static_cast<MessageType>(msg_type);\n"
-                                           "ERROR:\n"
-                                           "  return MessageType::TYPE_UNKNOWN;\n"
-                                           "}\n";
+  //pre-defined message class, and message enum
+  string enum_content;
+  size_t i = 0;
+  for (; i < msg_define.size(); ++i) {
+    enum_content += TB2"public static final int TYPE_";
+    enum_content += msg_define[i]->get_msg_name_upper() + " = " + std::to_string(1111 + i) + ";\n";
+  }
 
-    string rst;
-    rst += "package com.rokid.jupiter.dao.caps\n\n";
-    rst += "import java.util.List\n";
+  enum_content += TB2"public static final int UNKNOWN = " + std::to_string(1111 + i) + ";\n";
+  enum_content += TB2"public static final int getMessageType(byte[] buf) throws CapsException {\n"
+                  TB3"Caps caps = Caps.parse(buf, 0, buf.length);\n"
+                  TB3"int msgType = caps.readInt();\n"
+                  TB3"return (msgType >= 1111 && msgType < " + std::to_string(1111 + i) + ") ?  msgType : UNKNOWN;\n"
+                  TB2"}\n";
+  enum_content += TB2"private MessageType(){}\n";
+  rst += "\n"
+         TB
+         "//enum of message type\n";
+  rst += TB"public final class MessageType {\n";
+  rst += enum_content + TB"};\n";
 
-    if (ns.length() > 0)
-    {
-        rst += "package";
-        rst += ns + ";\n";
-    }
-    //pre-defined message class, and message enum
-    string enum_content;
-
-    for(auto &msg : msg_define)
-    {
-        if (enum_content.length() == 0)
-        {
-            enum_content = "TYPE_";
-            enum_content += msg->get_msg_name_upper();
-        }
-        else
-        {
-            enum_content += ", TYPE_";
-            enum_content += msg->get_msg_name_upper();
-        }
-    }
-    enum_content += ", TYPE_UNKNOWN";
-    rst += "\n"
-           TB
-           "//enum of message type\n";
-    rst += "  enum MessageType {";
-    rst += enum_content + "};\n";
+  rst += TB"public final class ByteOrder {\n"
+         TB2"public static final int NetworkByteOrder = 0x80;\n"
+         TB2"public static final int HostByteOrder = 0x00;\n"
+         TB2"private ByteOrder(){}\n"
+         TB"}\n";
 
 
+  for (auto &msg : msg_define)
+    rst += msg->create_code_string(TB);
 
-    for(auto &msg : msg_define)
-        rst += msg->create_code_string(TB);
-
-
-    rst += Common::add_tab(TemplateStr, TB);
-
-    rst += "\n#endif //_CAPSMESSAGE_H\n";
-    return rst;
+  return rst;
 }
