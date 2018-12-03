@@ -38,8 +38,7 @@ static void print_prompt(const char* progname) {
                               "USAGE: %s [options]\n"
                               "options:\n"
                               "\t-i input_file_path        set the message-define file path\n"
-                              "\t-o output_file_path       set the code file path\n"
-                              "\t-l [cpp, c, js, java]      set code language(support cpp only for now)";
+                              "\t-l [cpp, c, js, java]      set code language";
     printf(form, progname);
 }
 #define FUNC_STRING(v) "\"\\\"" #v "\\\":\\\"%s\\\"\"\n"
@@ -52,16 +51,16 @@ static void print_prompt(const char* progname) {
 
 
 int main(int argc, char** argv) {
-    char * abc;
-    int64_t a;
-    printf("%s\n", FUNC_STRING(abc));
-    printf("%s\n", FUNC_UINT32(abc));
-    printf("%s\n", FUNC_INT32(abc));
-    printf("%s\n", FUNC_UINT64(abc));
-    printf("%s\n", FUNC_INT64(abc));
-    printf("%s\n", FUNC_OBJ(abc));
-    printf("%s\n", FUNC_ARRAY(abc));
-    printf(FUNC_STRING(abc), "abddddc");
+//    char * abc;
+//    int64_t a;
+//    printf("%s\n", FUNC_STRING(abc));
+//    printf("%s\n", FUNC_UINT32(abc));
+//    printf("%s\n", FUNC_INT32(abc));
+//    printf("%s\n", FUNC_UINT64(abc));
+//    printf("%s\n", FUNC_INT64(abc));
+//    printf("%s\n", FUNC_OBJ(abc));
+//    printf("%s\n", FUNC_ARRAY(abc));
+//    printf(FUNC_STRING(abc), "abddddc");
     // parse arguments
     clargs_h h = clargs_parse(argc, argv);
     if (h == 0 || clargs_opt_has(h, "h")) {
@@ -70,7 +69,6 @@ int main(int argc, char** argv) {
         return 1;
     }
     const char* input_file = clargs_opt_get(h, "i");
-    const char* output_file = clargs_opt_get(h, "o");
     const char* l = clargs_opt_get(h, "l");
     string language;
     if (l != nullptr)
@@ -90,7 +88,6 @@ int main(int argc, char** argv) {
     {
         mg->parse(root);
         mg->create_code_file("./");
-        //Common::write_file(output_file, source);
         delete mg;
     }
     clargs_destroy(h);
