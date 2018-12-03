@@ -16,19 +16,20 @@ const char * const FieldTypeStr[] = {"string", "int32_t", "uint32_t", "int64_t",
 class CppFieldDefine: public BaseFieldDefine {
 public:
     CppFieldDefine() = default;
-    virtual ~CppFieldDefine() override {};
 
-    virtual const string create_get_function(const string &tab) override;
+    virtual ~CppFieldDefine() override = default;
 
-    virtual const string create_set_function(const string &tab) override;
+    virtual const string create_get_function(const string &tab, CodeType ct) override;
 
-    virtual const string create_serialize_function(const string &tab) override;
+    virtual const string create_set_function(const string &tab, CodeType ct) override;
 
-    virtual const string create_deserialize_function(const string &tab) override;
+    virtual const string create_serialize_function(const string &tab, CodeType ct) override;
 
-    virtual const string create_class_member(const string &tab) override;
+    virtual const string create_deserialize_function(const string &tab, CodeType ct) override;
 
-    const string create_to_json_function(const string &tab) override;
+    virtual const string create_class_member(const string &tab, CodeType ct) override;
+
+    const string create_to_json_function(const string &tab, CodeType ct) override;
 };
 
 

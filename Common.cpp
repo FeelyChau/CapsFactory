@@ -2,6 +2,8 @@
 // Created by 周飞宇 on 2018/11/20.
 //
 
+#include <fstream>
+#include <sstream>
 #include "Common.h"
 
 
@@ -90,4 +92,23 @@ std::string Common::to_upper(const char *s) {
     std::string result = s;
     std::transform(result.begin(), result.end(), result.begin(), ::toupper);
     return result;
+}
+
+
+bool Common::write_file(const std::string &filename, const std::string &content)
+{
+    std::ofstream ofile(filename);
+    ofile.write(content.c_str(), content.size());
+    ofile.close();
+    return true;
+}
+
+const std::string Common::read_file(const char * filename)
+{
+    std::ifstream ifile(filename);
+    std::ostringstream buf;
+    char ch;
+    while(buf&&ifile.get(ch))
+        buf.put(ch);
+    return buf.str();
 }

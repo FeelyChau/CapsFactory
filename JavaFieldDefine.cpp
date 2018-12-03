@@ -9,7 +9,7 @@ JavaFieldDefine::~JavaFieldDefine() {
 
 }
 
-const string JavaFieldDefine::create_get_function(const string &tab) {
+const string JavaFieldDefine::create_get_function(const string &tab, CodeType ct) {
   string getter_comment = comment.length() == 0 ? "" : "//getter " + comment;
   string func_name = "get_";
   func_name += name;
@@ -36,7 +36,7 @@ const string JavaFieldDefine::create_get_function(const string &tab) {
                     camel_name.c_str());
 }
 
-const string JavaFieldDefine::create_set_function(const string &tab) {
+const string JavaFieldDefine::create_set_function(const string &tab, CodeType ct) {
   string setter_comment = comment.length() == 0 ? "" : "//setter " + comment;
   string func_name = "set_";
   func_name += name;
@@ -63,7 +63,7 @@ const string JavaFieldDefine::create_set_function(const string &tab) {
                     camel_name.c_str(), camel_name.c_str(), camel_name.c_str());
 }
 
-const string JavaFieldDefine::create_serialize_function(const string &tab) {
+const string JavaFieldDefine::create_serialize_function(const string &tab, CodeType ct) {
   string camel_name = Common::camel_case(name.c_str());
   if (repeated) {
     if (field_type == FieldType::USERDEFINE) {
@@ -93,7 +93,7 @@ const string JavaFieldDefine::create_serialize_function(const string &tab) {
   }
 }
 
-const string JavaFieldDefine::create_deserialize_function(const string &tab) {
+const string JavaFieldDefine::create_deserialize_function(const string &tab, CodeType ct) {
   if (repeated) {
     if (field_type == FieldType::USERDEFINE) {
       static const char *const Template_Deserialize_Array_User_Define = "int arraySize%s = caps.readInt();\n"
@@ -132,31 +132,60 @@ const string JavaFieldDefine::create_deserialize_function(const string &tab) {
   }
 }
 
-const string JavaFieldDefine::create_class_member(const string &tab) {
+const string JavaFieldDefine::create_class_member(const string &tab, CodeType ct) {
   string camel_name = Common::camel_case(name.c_str());
   if (repeated) {
     if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_Member_Array_User_Define = "//%s\nprivate List<%s> %s;\n";
+      static const char *const Template_Member_Array_User_Define = "//%s\nprivate List<%s> %s = null;\n";
       RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_User_Define, comment.c_str(), user_define_type_name.c_str(),
                         camel_name.c_str());
     } else {
-      static const char *const Template_Member_Array_String = "//%s\nprivate List<%s> %s;\n";
+      static const char *const Template_Member_Array_String = "//%s\nprivate List<%s> %s = null;\n";
       RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_String, comment.c_str(),
                         FieldJavaTypeStr[static_cast<int>(field_type)], camel_name.c_str());
     }
   } else {
     if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_Member_User_Define = "//%s\nprivate %s %s;\n";
+      static const char *const Template_Member_User_Define = "//%s\nprivate %s %s = null;\n";
       RETURN_CODEFORMAT(tab.c_str(), Template_Member_User_Define, comment.c_str(), user_define_type_name.c_str(),
                         camel_name.c_str());
     } else {
-      static const char *const Template_Member_String = "//%s\nprivate %s %s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_String, comment.c_str(),
-                        FieldJavaTypeStr[static_cast<int>(field_type)], camel_name.c_str());
+      static const char *const Template_Member_Inner = "%s %s = %s;\n";
+      static const char *const Template_Member_Inner_Default_Int = "%s %s = %lld;\n";
+      static const char *const Template_Member_Inner_Default_Double = "%s %s = %f;\n";
+
+      if (!defualt_value.is_set) {
+        if (field_type == FieldType::STRING) {
+          RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner, FieldJavaTypeStr[static_cast<int>(field_type)],
+                            camel_name.c_str(), "null");
+        } else {
+          RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner, FieldJavaTypeStr[static_cast<int>(field_type)],
+                            camel_name.c_str(), "0");
+        }
+      } else {
+        switch(defualt_value.ft) {
+          case FieldType::INT32:
+          case FieldType::INT64:
+          case FieldType::UINT32:
+          case FieldType::UINT64:
+            RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Int, FieldJavaTypeStr[static_cast<int>(field_type)],
+                            camel_name.c_str(), defualt_value.value.i);
+          case FieldType::DOUBLE:
+          case FieldType::FLOAT:
+            RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Double, FieldJavaTypeStr[static_cast<int>(field_type)],
+                            camel_name.c_str(), defualt_value.value.d);
+          case FieldType::STRING:
+            RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner, FieldJavaTypeStr[static_cast<int>(field_type)],
+                            camel_name.c_str(), ("new String(\"" + defualt_value.value.s + "\")").c_str());
+          default:
+            RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Int, FieldJavaTypeStr[static_cast<int>(field_type)],
+                            camel_name.c_str(), (uint64_t)0);
+        }
+      }
     }
   }
 }
 
-const string JavaFieldDefine::create_to_json_function(const string &tab) {
+const string JavaFieldDefine::create_to_json_function(const string &tab, CodeType ct) {
   return std::string();
 }

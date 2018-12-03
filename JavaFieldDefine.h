@@ -15,17 +15,17 @@ class JavaFieldDefine: public BaseFieldDefine{
 public:
     ~JavaFieldDefine() override;
 
-    const string create_get_function(const string &tab) override;
+    const string create_get_function(const string &tab, CodeType ct) override;
 
-    const string create_to_json_function(const string &tab) override;
+    const string create_to_json_function(const string &tab, CodeType ct) override;
 
-    const string create_set_function(const string &tab) override;
+    const string create_set_function(const string &tab, CodeType ct) override;
 
-    const string create_serialize_function(const string &tab) override;
+    const string create_serialize_function(const string &tab, CodeType ct) override;
 
-    const string create_deserialize_function(const string &tab) override;
+    const string create_deserialize_function(const string &tab, CodeType ct) override;
 
-    const string create_class_member(const string &tab) override;
+    const string create_class_member(const string &tab, CodeType ct) override;
 };
 
 

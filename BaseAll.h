@@ -12,11 +12,27 @@
 using namespace std;
 
 enum class FieldType { STRING = 0, INT32, UINT32, INT64, UINT64, FLOAT, DOUBLE, USERDEFINE};
+enum class CodeType { SOURCE = 0, HEAD};
 
+typedef struct _sDefaultValue {
+    int64_t i;
+    double d;
+    std::string s;
+    void *p;
+} DefaultValue;
+
+typedef struct _sDefaultDef {
+    bool is_set;
+    FieldType ft;
+    DefaultValue value;
+} DefaultDef;
+
+class BaseMsgDefine;
+class BaseMsgGroup;
 class BaseFieldDefine {
 public:
     BaseFieldDefine() = default;
-    virtual ~BaseFieldDefine() {};
+    virtual ~BaseFieldDefine() = default;
 
     bool parse(cJSON* root);
 
@@ -36,36 +52,44 @@ public:
 
     bool is_repeated() const;
 
-    virtual const string create_get_function(const string &tab) = 0;
+    void set_msg_define(BaseMsgDefine *msgDefine);
 
-    virtual const string create_set_function(const string &tab) = 0;
+    bool is_userdefine_data();
 
-    virtual const string create_serialize_function(const string &tab) = 0;
+    const string & get_user_define_type_name();
 
-    virtual const string create_deserialize_function(const string &tab) = 0;
+    virtual const string create_get_function(const string &tab, CodeType ct) = 0;
 
-    virtual const string create_class_member(const string &tab) = 0;
+    virtual const string create_set_function(const string &tab, CodeType ct) = 0;
 
-    virtual const string create_to_json_function(const string &tab) = 0;
+    virtual const string create_serialize_function(const string &tab, CodeType ct) = 0;
+
+    virtual const string create_deserialize_function(const string &tab, CodeType ct) = 0;
+
+    virtual const string create_class_member(const string &tab, CodeType ct) = 0;
+
+    virtual const string create_to_json_function(const string &tab, CodeType ct) = 0;
 
 protected:
     string name;
     FieldType field_type;
-    string defualt_value;
+    DefaultDef defualt_value;
     string user_define_type_name;
     bool optional = false;
     bool repeated = false;
     string camel_name;
     string head_up_name;
     string comment;
+    BaseMsgDefine *msgDefine;
 };
 
 
 class BaseMsgDefine {
 protected:
-    string msg_name;
-    string msg_name_upper;
-    string comment;
+    string msg_name = "";
+    string msg_name_upper = "";
+    string comment = "";
+    BaseMsgGroup *msg_group = nullptr;
 public:
     const string &get_msg_name_upper() const;
 
@@ -73,19 +97,19 @@ public:
 
     const vector<shared_ptr<BaseFieldDefine>> &get_fields() const;
 
+    void set_msg_group(BaseMsgGroup *msg_group);
 protected:
     vector<std::shared_ptr<BaseFieldDefine>> fields;
-protected:
-    virtual string create_serialize(const string &tab) = 0;
-    virtual string create_deserialize(const string &tab) = 0;
-    virtual string create_serialize_for_caps_obj(const string &tab) = 0;
-    virtual string create_deserialize_for_caps_obj(const string &tab) = 0;
+    virtual string create_serialize(const string &tab, CodeType ct) = 0;
+    virtual string create_deserialize(const string &tab, CodeType ct) = 0;
+    virtual string create_serialize_for_caps_obj(const string &tab, CodeType ct) = 0;
+    virtual string create_deserialize_for_caps_obj(const string &tab, CodeType ct) = 0;
     virtual std::shared_ptr<BaseFieldDefine> new_field_define() = 0;
 public:
     BaseMsgDefine() = default;
-    virtual ~BaseMsgDefine(){};
+    virtual ~BaseMsgDefine() = default;
     bool parse(cJSON *root);
-    virtual string create_code_string(const string &tab) = 0;
+    virtual string create_code_string(const string &tab, CodeType ct) = 0;
 };
 
 class BaseMsgGroup {
@@ -96,10 +120,11 @@ protected:
     string comment;
 public:
     BaseMsgGroup() = default;
-    virtual ~BaseMsgGroup(){};
+    virtual ~BaseMsgGroup() = default;
 
     bool parse(cJSON *root);
-    virtual string create_code_string() = 0;
+    virtual void create_code_file(const string &file_path) = 0;
+    const string& get_ns();
 };
 
 

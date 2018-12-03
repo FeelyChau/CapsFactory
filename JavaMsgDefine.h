@@ -10,16 +10,16 @@ class JavaMsgDefine: public BaseMsgDefine {
 public:
     ~JavaMsgDefine() override;
 
-    string create_code_string(const string &tab) override;
+    string create_code_string(const string &tab, CodeType ct) override;
 
 protected:
-    string create_serialize(const string &tab) override;
+    string create_serialize(const string &tab, CodeType ct) override;
 
-    string create_deserialize(const string &tab) override;
+    string create_deserialize(const string &tab, CodeType ct) override;
 
-    string create_serialize_for_caps_obj(const string &tab) override;
+    string create_serialize_for_caps_obj(const string &tab, CodeType ct) override;
 
-    string create_deserialize_for_caps_obj(const string &tab) override;
+    string create_deserialize_for_caps_obj(const string &tab, CodeType ct) override;
 
     shared_ptr<BaseFieldDefine> new_field_define() override;
 

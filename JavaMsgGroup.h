@@ -13,7 +13,7 @@ protected:
 public:
     JavaMsgGroup() = default;
     ~JavaMsgGroup() override {};
-    virtual string create_code_string() override;
+    virtual void create_code_file(const string &file_path) override;
 };
 
 

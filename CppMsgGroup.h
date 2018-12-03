@@ -16,7 +16,7 @@ protected:
 public:
     CppMsgGroup() = default;
     virtual ~CppMsgGroup() override {};
-    virtual string create_code_string() override;
+    virtual void create_code_file(const string &file_path) override;
 };
 
 #endif //CAPSFACTORY_MSGGROUP_H

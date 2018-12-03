@@ -11,7 +11,7 @@ JSMsgGroup::~JSMsgGroup() {
 }
 
 
-string JSMsgGroup::create_code_string() {
+void JSMsgGroup::create_code_file(const string &file_path) {
     static const char* const Template_All = "\"use strict\"\n"
                                             "%s\n"
                                             "%s\n"
@@ -49,13 +49,19 @@ string JSMsgGroup::create_code_string() {
     string class_define;
 
     for(auto &msg : msg_define)
-        class_define += msg->create_code_string("");
+        class_define += msg->create_code_string("", CodeType::SOURCE);
 
     string exports;
     for(auto &msg : msg_define)
         exports += "exports." + msg->get_msg_name() + " = " + msg->get_msg_name() + "\n";
     exports += "exports.MessageType = MessageType;\n";
-    RETURN_CODEFORMAT("", Template_All, enum_define.c_str(), class_define.c_str(), exports.c_str());
+    string content;
+    CODEFORMAT(content, "", Template_All, enum_define.c_str(), class_define.c_str(), exports.c_str());
+    Common::write_file("", content);
+    if (ns == "")
+      Common::write_file(file_path + "js/CapsMsg.js", content);
+    else
+      Common::write_file(file_path + "js/" + ns + ".js", content);
 }
 
 shared_ptr<BaseMsgDefine> JSMsgGroup::new_msg_define() {

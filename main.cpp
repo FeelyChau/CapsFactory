@@ -31,25 +31,7 @@ using namespace std;
  */
 
 
-//从文件读入到string里
-string readFileIntoString(const char * filename)
-{
-    ifstream ifile(filename);
-    ostringstream buf;
-    char ch;
-    while(buf&&ifile.get(ch))
-        buf.put(ch);
-    return buf.str();
-}
 
-
-bool writeFile(const char * filename, const string& content)
-{
-    ofstream ofile(filename);
-    ofile.write(content.c_str(), content.size());
-    ofile.close();
-    return true;
-}
 
 static void print_prompt(const char* progname) {
     static const char* form = "CapsFactory\n\n"
@@ -93,7 +75,7 @@ int main(int argc, char** argv) {
     string language;
     if (l != nullptr)
         language = l;
-    string s = readFileIntoString(input_file);
+    string s = Common::read_file(input_file);
     cJSON *root = cJSON_Parse(s.c_str());
     BaseMsgGroup *mg = nullptr;
     if (language == "cpp")
@@ -107,8 +89,8 @@ int main(int argc, char** argv) {
     if (mg)
     {
         mg->parse(root);
-        string source = mg->create_code_string();
-        writeFile(output_file, source);
+        mg->create_code_file("./");
+        //Common::write_file(output_file, source);
         delete mg;
     }
     clargs_destroy(h);

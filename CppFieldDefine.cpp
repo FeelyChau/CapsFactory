@@ -8,83 +8,137 @@
 #include "Common.h"
 
 
-const string CppFieldDefine::create_get_function(const string &tab) {
+const string CppFieldDefine::create_get_function(const string &tab, CodeType ct) {
   string getter_commont;
-  getter_commont = comment.length() == 0 ? "" : "//getter " + comment;
-  if (repeated) {
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_TypeName_Array_User_Define = "\n%s\nconst std::shared_ptr<std::vector<%s>> get%s() const { return %s; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_User_Define, getter_commont.c_str(),
-                        user_define_type_name.c_str(),
-                        head_up_name.c_str(), camel_name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_TypeName_Array_String = "\n%s\nconst std::shared_ptr<std::vector<std::string>> get%s() const { return %s; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_String, getter_commont.c_str(), head_up_name.c_str(),
-                        camel_name.c_str());
+  getter_commont = comment.length() == 0 ? "" : "getter " + comment;
+  if (ct == CodeType::HEAD) {
+    if (repeated) {
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_TypeName_Array_User_Define = "\n/*\n* %s\n*/\n"
+                                                                       "inline const std::shared_ptr<std::vector<%s>> %s::get%s() const {\n"
+                                                                       TB "return %s;\n"
+                                                                       "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_User_Define, getter_commont.c_str(),
+                          msgDefine->get_msg_name().c_str(),
+                          user_define_type_name.c_str(),
+                          head_up_name.c_str(), camel_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_TypeName_Array_String = "\n/*\n* %s\n*/\n"
+                                                                  "inline const std::shared_ptr<std::vector<std::string>> %s::get%s() const {\n"
+                                                                  TB"return %s;\n"
+                                                                  "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_String, getter_commont.c_str(),
+                          msgDefine->get_msg_name().c_str(), head_up_name.c_str(),
+                          camel_name.c_str());
+      } else {
+        static const char *const Template_TypeName_Array_Inner = "\n/*\n* %s\n*/\n"
+                                                                 "inline const std::shared_ptr<std::vector<%s>> %s::get%s() const {\n"
+                                                                 TB "return %s;\n"
+                                                                 "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_Inner, getter_commont.c_str(),
+                          msgDefine->get_msg_name().c_str(),
+                          FieldTypeStr[static_cast<int>(field_type)],
+                          head_up_name.c_str(), camel_name.c_str());
+      }
     } else {
-      static const char *const Template_TypeName_Array_Inner = "\n%s\nconst std::shared_ptr<std::vector<%s>> get%s() const { return %s; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_Inner, getter_commont.c_str(),
-                        FieldTypeStr[static_cast<int>(field_type)],
-                        head_up_name.c_str(), camel_name.c_str());
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_TypeName_User_Define = "\n/*\n* %s\n*/\n"
+                                                                 "inline const std::shared_ptr<%s> & %s::get%s() const {\n"
+                                                                 TB "return %s;\n"
+                                                                 "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define, getter_commont.c_str(), msgDefine->get_msg_name().c_str(),
+                          user_define_type_name.c_str(), head_up_name.c_str(),
+                          camel_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_TypeName_String = "\n/*\n* %s\n*/\n"
+                                                            "inline const std::shared_ptr<std::string> %s::get%s() const {\n"
+                                                            TB "return %s;\n"
+                                                            "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_String, getter_commont.c_str(),
+                          msgDefine->get_msg_name().c_str(), head_up_name.c_str(),
+                          camel_name.c_str());
+      } else {
+        static const char *const Template_TypeName_Inner = "\n/*\n* %s\n*/\n"
+                                                           "inline %s get%s() const {\n"
+                                                           TB "return %s;\n"
+                                                           "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Inner, getter_commont.c_str(),
+                          FieldTypeStr[static_cast<int>(field_type)], head_up_name.c_str(),
+                          camel_name.c_str());
+      }
     }
-  } else {
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_TypeName_User_Define = "\n%s\nconst std::shared_ptr<%s> & get%s() const { return %s; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define, getter_commont.c_str(),
-                        user_define_type_name.c_str(), head_up_name.c_str(),
-                        camel_name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_TypeName_String = "\n%s\nconst std::shared_ptr<std::string> get%s() const { return %s; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_String, getter_commont.c_str(), head_up_name.c_str(),
-                        camel_name.c_str());
-    } else {
-      static const char *const Template_TypeName_Inner = "\n%s\n%s get%s() const { return %s; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Inner, getter_commont.c_str(),
-                        FieldTypeStr[static_cast<int>(field_type)],
-                        head_up_name.c_str(), camel_name.c_str());
-    }
-  }
+  } else
+    return "";
 }
 
-const string CppFieldDefine::create_set_function(const string &tab) {
+const string CppFieldDefine::create_set_function(const string &tab, CodeType ct) {
   string setter_commont;
-  setter_commont = comment.length() == 0 ? "" : "//setter " + comment;
-  if (repeated) {
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_TypeName_Array_User_Define_Set = "\n%s\nvoid set%s(const std::shared_ptr<std::vector<%s>> &v) { this->%s = v; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_User_Define_Set, setter_commont.c_str(),
-                        head_up_name.c_str(),
-                        user_define_type_name.c_str(), camel_name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_TypeName_Array_String_Set = "\n%s\nvoid set%s(const std::shared_ptr<std::vector<std::string>> &v) { %s = v; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_String_Set, setter_commont.c_str(), head_up_name.c_str(),
-                        camel_name.c_str());
+  setter_commont = comment.length() == 0 ? "" : "setter " + comment;
+  if (ct == CodeType::HEAD) {
+    if (repeated) {
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_TypeName_Array_User_Define_Set = "\n/*\n* %s\n*/\n"
+                                                                           "inline void set%s(const std::shared_ptr<std::vector<%s>> &v) {\n"
+                                                                           TB "this->%s = v;\n"
+                                                                           "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_User_Define_Set, setter_commont.c_str(),
+                          head_up_name.c_str(), user_define_type_name.c_str(), camel_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_TypeName_Array_String_Set = "\n/*\n* %s\n*/\n"
+                                                                      "inline void set%s(const std::shared_ptr<std::vector<std::string>> &v) {\n"
+                                                                      TB "%s = v;\n"
+                                                                      "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_String_Set, setter_commont.c_str(), head_up_name.c_str(),
+                          camel_name.c_str());
+      } else {
+        static const char *const Template_TypeName_Array_Inner_Set = "\n/*\n* %s\n*/\n"
+                                                                     "inline void set%s(const std::shared_ptr<std::vector<%s>> &v) {\n"
+                                                                     TB "%s = v;\n"
+                                                                     "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_Inner_Set, setter_commont.c_str(), head_up_name.c_str(),
+                          FieldTypeStr[static_cast<int>(field_type)], camel_name.c_str());
+      }
     } else {
-      static const char *const Template_TypeName_Array_Inner_Set = "\n%s\nvoid set%s(const std::shared_ptr<std::vector<%s>> &v) { %s = v; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_Inner_Set, setter_commont.c_str(), head_up_name.c_str(),
-                        FieldTypeStr[static_cast<int>(field_type)], camel_name.c_str());
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_TypeName_User_Define_Set = "\n/*\n* %s\n*/\n"
+                                                                     "inline void set%s(const std::shared_ptr<%s> &v) {\n"
+                                                                     TB "%s = v;\n"
+                                                                     "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define_Set, setter_commont.c_str(),
+                          head_up_name.c_str(), user_define_type_name.c_str(), camel_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_TypeName_String_Set = "\n/*\n* %s\n*/\n"
+                                                                "inline void set%s(const std::shared_ptr<std::string> &v) {\n"
+                                                                TB "%s = v;\n"
+                                                                "}\n"
+                                                                "\n/*\n* %s\n*/\n"
+                                                                "inline void set%s(const char* v) {\n"
+                                                                TB "if (!%s)"
+                                                                TB2 "%s = std::make_shared<std::string>();"
+                                                                TB "*%s = v;\n"
+                                                                "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_String_Set, setter_commont.c_str(),
+                          head_up_name.c_str(),
+                          camel_name.c_str(),
+                          setter_commont.c_str(), head_up_name.c_str(),
+                          camel_name.c_str(), camel_name.c_str(),
+                          camel_name.c_str());
+      } else {
+        static const char *const Template_TypeName_Inner_Set = "\n/*\n* %s\n*/\n"
+                                                               "inline void set%s(%s v) {\n"
+                                                               TB "%s = v;\n"
+                                                               "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Inner_Set, setter_commont.c_str(),
+                          head_up_name.c_str(), FieldTypeStr[static_cast<int>(field_type)], camel_name.c_str());
+      }
     }
-  } else {
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_TypeName_User_Define_Set = "\n%s\nvoid set%s(const std::shared_ptr<%s> &v) { %s = v; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define_Set, setter_commont.c_str(), head_up_name.c_str(),
-                        user_define_type_name.c_str(), camel_name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_TypeName_String_Set = "\n%s\nvoid set%s(const std::shared_ptr<std::string> &v) { %s = v; }\n"
-                                                              "\n%s\nvoid set%s(const char* v) { if (!%s) %s = std::make_shared<std::string>(); *%s = v; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_String_Set, setter_commont.c_str(), head_up_name.c_str(),
-                        camel_name.c_str(),
-                        setter_commont.c_str(), head_up_name.c_str(), camel_name.c_str(), camel_name.c_str(),
-                        camel_name.c_str());
-    } else {
-      static const char *const Template_TypeName_Inner_Set = "\n%s\nvoid set%s(%s v) { %s = v; }\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Inner_Set, setter_commont.c_str(), head_up_name.c_str(),
-                        FieldTypeStr[static_cast<int>(field_type)], camel_name.c_str());
-    }
-  }
+  } else
+    return "";
 }
 
-const string CppFieldDefine::create_serialize_function(const string &tab) {
+const string CppFieldDefine::create_serialize_function(const string &tab, CodeType ct) {
+  if (ct != CodeType::SOURCE)
+    return string();
   if (repeated) {
     if (field_type == FieldType::USERDEFINE) {
       static const char *const Template_Serialize_Array_User_Define = "if (!%s)\n"
@@ -133,7 +187,7 @@ const string CppFieldDefine::create_serialize_function(const string &tab) {
   } else {
     if (field_type == FieldType::USERDEFINE) {
       static const char *const Template_Serialize_User_Define = "std::shared_ptr<Caps> caps%s;\n"
-                                                                "assert(!%s);\n"
+                                                                "assert(%s);\n"
                                                                 "int32_t sRst%s = %s->serializeForCapsObj(caps%s);\n"
                                                                 "if (sRst%s != CAPS_SUCCESS)\n"
                                                                 TB"return sRst%s;\n"
@@ -162,150 +216,146 @@ const string CppFieldDefine::create_serialize_function(const string &tab) {
   }
 }
 
-const string CppFieldDefine::create_deserialize_function(const string &tab) {
-  if (repeated) {
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_Deserialize_Array_User_Define = "int32_t arraySize%s = 0;\n"
-                                                                        "int32_t rRst%s = caps->read(arraySize%s);\n"
-                                                                        "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
-                                                                        "%s->clear();\n"
-                                                                        "for(int32_t i = 0; i < arraySize%s;++i) {\n"
-                                                                        TB"std::shared_ptr<Caps> c;\n"
-                                                                        TB"if (caps->read(c) == CAPS_SUCCESS && c) {\n"
-                                                                        TB2"%s->emplace_back();\n"
-                                                                        TB2"int32_t dRst = %s->back().deserializeForCapsObj(c);\n"
-                                                                        TB2"if (dRst != CAPS_SUCCESS) return dRst;\n"
-                                                                        TB"}\n"
-                                                                        "}\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_User_Define, head_up_name.c_str(), head_up_name.c_str(),
-                        head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(),
-                        camel_name.c_str(), head_up_name.c_str(), camel_name.c_str(), camel_name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_Deserialize_Array_String = "int32_t arraySize%s = 0;\n"
-                                                                   "int32_t rRst%s = caps->read(arraySize%s);\n"
-                                                                   "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
-                                                                   "%s->clear();\n"
-                                                                   "for(int32_t i = 0; i < arraySize%s;++i) {\n"
-                                                                   TB"%s->emplace_back();\n"
-                                                                   TB"int32_t rRst = caps->read_string(%s->back());\n"
-                                                                   TB"if (rRst != CAPS_SUCCESS) return rRst;\n"
-                                                                   "}\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_String, head_up_name.c_str(), head_up_name.c_str(),
-                        head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
-                        head_up_name.c_str(), camel_name.c_str(),
-                        camel_name.c_str());
-    } else {
-      static const char *const Template_Deserialize_Array_Inner = "int32_t arraySize%s = 0;\n"
-                                                                  "int32_t rRst%s = caps->read(arraySize%s);\n"
-                                                                  "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
-                                                                  "%s->clear();\n"
-                                                                  "for(int32_t i = 0; i < arraySize%s;++i) {\n"
-                                                                  TB"%s->emplace_back();\n"
-                                                                  TB"int32_t rRst = caps->read(%s->back());\n"
-                                                                  TB"if (rRst != CAPS_SUCCESS) return rRst;\n"
-                                                                  "}\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_Inner, head_up_name.c_str(), head_up_name.c_str(),
-                        head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
-                        head_up_name.c_str(), camel_name.c_str(),
-                        camel_name.c_str());
-    }
-  } else {
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_Deserialize_User_Define = "std::shared_ptr<Caps> caps%s;\n"
-                                                                  "int32_t rRst%s = caps->read(caps%s);\n"
-                                                                  "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
-                                                                  "if (!%s) %s = std::make_shared<%s>();\n"
-                                                                  "rRst%s = %s->deserializeForCapsObj(caps%s);\n"
-                                                                  "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n";
-
-      RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_User_Define, head_up_name.c_str(), head_up_name.c_str(),
-                        head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
-                        camel_name.c_str(), user_define_type_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
-                        head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_Deserialize_String =
-              "if (!%s) %s = std::make_shared<std::string>();\n"
-              "int32_t rRst%s = caps->read_string(*%s);\n"
-              "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n";
-
-      RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_String, camel_name.c_str(), camel_name.c_str(),
-                        head_up_name.c_str(), camel_name.c_str(),
-                        head_up_name.c_str(), head_up_name.c_str());
-    } else {
-      static const char *const Template_Deserialize_Inner = "int32_t rRst%s = caps->read(%s);\n"
-                                                            "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n";
-
-      RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Inner, head_up_name.c_str(), camel_name.c_str(),
-                        head_up_name.c_str(), head_up_name.c_str());
-    }
-  }
-}
-
-const string CppFieldDefine::create_class_member(const string &tab) {
-  if (repeated) {
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_Member_Array_User_Define = "std::shared_ptr<std::vector<%s>> %s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_User_Define, user_define_type_name.c_str(), camel_name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_Member_Array_String = "std::shared_ptr<std::vector<std::string>> %s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_String, name.c_str());
-    } else {
-      static const char *const Template_Member_Array_String = "std::shared_ptr<std::vector<%s>> %s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_String, FieldTypeStr[static_cast<int>(field_type)],
-                        camel_name.c_str());
-    }
-  } else {
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_Member_User_Define = "std::shared_ptr<%s> %s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_User_Define, user_define_type_name.c_str(), name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_Member_String = "std::shared_ptr<std::string> %s;\n";
-      static const char *const Template_Member_String_Default = "std::string %s = \"%s\";\n";
-      if (defualt_value != "") {
-        RETURN_CODEFORMAT(tab.c_str(), Template_Member_String, camel_name.c_str());
+const string CppFieldDefine::create_deserialize_function(const string &tab, CodeType ct) {
+  if (ct == CodeType::SOURCE) {
+    if (repeated) {
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_Deserialize_Array_User_Define = "int32_t arraySize%s = 0;\n"
+                                                                          "int32_t rRst%s = caps->read(arraySize%s);\n"
+                                                                          "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
+                                                                          "%s->clear();\n"
+                                                                          "for(int32_t i = 0; i < arraySize%s;++i) {\n"
+                                                                          TB"std::shared_ptr<Caps> c;\n"
+                                                                          TB"if (caps->read(c) == CAPS_SUCCESS && c) {\n"
+                                                                          TB2"%s->emplace_back();\n"
+                                                                          TB2"int32_t dRst = %s->back().deserializeForCapsObj(c);\n"
+                                                                          TB2"if (dRst != CAPS_SUCCESS) return dRst;\n"
+                                                                          TB"}\n"
+                                                                          "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_User_Define, head_up_name.c_str(),
+                          head_up_name.c_str(),
+                          head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(),
+                          camel_name.c_str(), head_up_name.c_str(), camel_name.c_str(), camel_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_Deserialize_Array_String = "int32_t arraySize%s = 0;\n"
+                                                                     "int32_t rRst%s = caps->read(arraySize%s);\n"
+                                                                     "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
+                                                                     "%s->clear();\n"
+                                                                     "for(int32_t i = 0; i < arraySize%s;++i) {\n"
+                                                                     TB"%s->emplace_back();\n"
+                                                                     TB"int32_t rRst = caps->read_string(%s->back());\n"
+                                                                     TB"if (rRst != CAPS_SUCCESS) return rRst;\n"
+                                                                     "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_String, head_up_name.c_str(), head_up_name.c_str(),
+                          head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
+                          head_up_name.c_str(), camel_name.c_str(),
+                          camel_name.c_str());
       } else {
-        RETURN_CODEFORMAT(tab.c_str(), Template_Member_String_Default, camel_name.c_str(), defualt_value.c_str());
+        static const char *const Template_Deserialize_Array_Inner = "int32_t arraySize%s = 0;\n"
+                                                                    "int32_t rRst%s = caps->read(arraySize%s);\n"
+                                                                    "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
+                                                                    "%s->clear();\n"
+                                                                    "for(int32_t i = 0; i < arraySize%s;++i) {\n"
+                                                                    TB"%s->emplace_back();\n"
+                                                                    TB"int32_t rRst = caps->read(%s->back());\n"
+                                                                    TB"if (rRst != CAPS_SUCCESS) return rRst;\n"
+                                                                    "}\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_Inner, head_up_name.c_str(), head_up_name.c_str(),
+                          head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
+                          head_up_name.c_str(), camel_name.c_str(),
+                          camel_name.c_str());
       }
     } else {
-      static const char *const Template_Member_Inner = "%s %s;\n";
-      static const char *const Template_Member_Inner_Default = "%s %s = %s;\n";
-      if (defualt_value != "") {
-        RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner, FieldTypeStr[static_cast<int>(field_type)], camel_name.c_str());
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_Deserialize_User_Define = "std::shared_ptr<Caps> caps%s;\n"
+                                                                    "int32_t rRst%s = caps->read(caps%s);\n"
+                                                                    "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
+                                                                    "if (!%s) %s = std::make_shared<%s>();\n"
+                                                                    "rRst%s = %s->deserializeForCapsObj(caps%s);\n"
+                                                                    "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n";
+
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_User_Define, head_up_name.c_str(), head_up_name.c_str(),
+                          head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
+                          camel_name.c_str(), user_define_type_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
+                          head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_Deserialize_String =
+                "if (!%s) %s = std::make_shared<std::string>();\n"
+                "int32_t rRst%s = caps->read_string(*%s);\n"
+                "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n";
+
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_String, camel_name.c_str(), camel_name.c_str(),
+                          head_up_name.c_str(), camel_name.c_str(),
+                          head_up_name.c_str(), head_up_name.c_str());
       } else {
-        RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default, FieldTypeStr[static_cast<int>(field_type)],
-                          camel_name.c_str(), defualt_value.c_str());
+        static const char *const Template_Deserialize_Inner = "int32_t rRst%s = caps->read(%s);\n"
+                                                              "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n";
+
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Inner, head_up_name.c_str(), camel_name.c_str(),
+                          head_up_name.c_str(), head_up_name.c_str());
       }
     }
-  }
+  } else
+    return string();
 }
 
-const string CppFieldDefine::create_to_json_function(const string &tab) {
-  if (repeated) {
-    static const char *const Template_Array_Readable = "\"%s\": [\n"
-                                                       TB"%s"
-                                                       "]\n";
-    static const char *const Template_Array_Compress = "\"%s\":[%s];";
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_Member_Array_User_Define = "std::vector<%s> %s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_User_Define, user_define_type_name.c_str(), name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_Member_Array_String = "std::vector<std::string> _%s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_String, name.c_str());
+const string CppFieldDefine::create_class_member(const string &tab, CodeType ct) {
+  if (ct == CodeType::HEAD) {
+    if (repeated) {
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_Member_Array_User_Define = "std::shared_ptr<std::vector<%s>> %s = nullptr;\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_User_Define, user_define_type_name.c_str(),
+                          camel_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_Member_Array_String = "std::shared_ptr<std::vector<std::string>> %s = nullptr;\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_String, camel_name.c_str());
+      } else {
+        static const char *const Template_Member_Array_String = "std::shared_ptr<std::vector<%s>> %s = nullptr;\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_String, FieldTypeStr[static_cast<int>(field_type)],
+                          camel_name.c_str());
+      }
     } else {
-      static const char *const Template_Member_Array_String = "std::vector<%s> _%s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_Array_String, FieldTypeStr[static_cast<int>(field_type)],
-                        name.c_str());
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_Member_User_Define = "std::shared_ptr<%s> %s = nullptr;\n";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Member_User_Define, user_define_type_name.c_str(), camel_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_Member_String = "std::shared_ptr<std::string> %s = nullptr;\n";
+        static const char *const Template_Member_String_Default = "std::shared_ptr<std::string> %s = std::make_shared<std::string>(\"%s\");\n";
+        if (!defualt_value.is_set) {
+          RETURN_CODEFORMAT(tab.c_str(), Template_Member_String, camel_name.c_str());
+        } else {
+          RETURN_CODEFORMAT(tab.c_str(), Template_Member_String_Default, camel_name.c_str(), defualt_value.value.s.c_str());
+        }
+      } else {
+        static const char *const Template_Member_Inner = "%s %s = 0;\n";
+        static const char *const Template_Member_Inner_Default_Int = "%s %s = %lld;\n";
+        static const char *const Template_Member_Inner_Default_Double = "%s %s = %f;\n";
+        if (!defualt_value.is_set) {
+          RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner, FieldTypeStr[static_cast<int>(field_type)],
+                            camel_name.c_str());
+        } else {
+          switch(defualt_value.ft) {
+            case FieldType::INT32:
+            case FieldType::INT64:
+            case FieldType::UINT32:
+            case FieldType::UINT64:
+              RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Int, FieldTypeStr[static_cast<int>(field_type)],
+                              camel_name.c_str(), defualt_value.value.i);
+            case FieldType::DOUBLE:
+            case FieldType::FLOAT:
+              RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Double, FieldTypeStr[static_cast<int>(field_type)],
+                              camel_name.c_str(), defualt_value.value.d);
+            default:
+              RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Int, FieldTypeStr[static_cast<int>(field_type)],
+                              camel_name.c_str(), (uint64_t)0);
+          }
+        }
+      }
     }
-  } else {
-    if (field_type == FieldType::USERDEFINE) {
-      static const char *const Template_Member_User_Define = "%s _%s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_User_Define, user_define_type_name.c_str(), name.c_str());
-    } else if (field_type == FieldType::STRING) {
-      static const char *const Template_Member_String = "std::string _%s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_String, name.c_str());
-    } else {
-      static const char *const Template_Member_String = "%s _%s;\n";
-      RETURN_CODEFORMAT(tab.c_str(), Template_Member_String, FieldTypeStr[static_cast<int>(field_type)], name.c_str());
-    }
-  }
+  } else
+    return string();
+}
+
+const string CppFieldDefine::create_to_json_function(const string &tab, CodeType ct) {
+  return string();
 }

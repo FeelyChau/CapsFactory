@@ -13,7 +13,7 @@ public:
 
     ~JSMsgGroup() override;
 
-    string create_code_string() override;
+    void create_code_file(const string &file_path) override;
 
 protected:
     shared_ptr<BaseMsgDefine> new_msg_define() override;
