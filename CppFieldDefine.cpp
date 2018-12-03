@@ -15,47 +15,44 @@ const string CppFieldDefine::create_get_function(const string &tab, CodeType ct)
     if (repeated) {
       if (field_type == FieldType::USERDEFINE) {
         static const char *const Template_TypeName_Array_User_Define = "\n/*\n* %s\n*/\n"
-                                                                       "inline const std::shared_ptr<std::vector<%s>> %s::get%s() const {\n"
+                                                                       "inline const std::shared_ptr<std::vector<%s>> get%s() const {\n"
                                                                        TB "return %s;\n"
                                                                        "}\n";
         RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_User_Define, getter_commont.c_str(),
-                          msgDefine->get_msg_name().c_str(),
                           user_define_type_name.c_str(),
                           head_up_name.c_str(), camel_name.c_str());
       } else if (field_type == FieldType::STRING) {
         static const char *const Template_TypeName_Array_String = "\n/*\n* %s\n*/\n"
-                                                                  "inline const std::shared_ptr<std::vector<std::string>> %s::get%s() const {\n"
+                                                                  "inline const std::shared_ptr<std::vector<std::string>> get%s() const {\n"
                                                                   TB"return %s;\n"
                                                                   "}\n";
         RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_String, getter_commont.c_str(),
-                          msgDefine->get_msg_name().c_str(), head_up_name.c_str(),
-                          camel_name.c_str());
+                          head_up_name.c_str(), camel_name.c_str());
       } else {
         static const char *const Template_TypeName_Array_Inner = "\n/*\n* %s\n*/\n"
-                                                                 "inline const std::shared_ptr<std::vector<%s>> %s::get%s() const {\n"
+                                                                 "inline const std::shared_ptr<std::vector<%s>> get%s() const {\n"
                                                                  TB "return %s;\n"
                                                                  "}\n";
         RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_Array_Inner, getter_commont.c_str(),
-                          msgDefine->get_msg_name().c_str(),
                           FieldTypeStr[static_cast<int>(field_type)],
                           head_up_name.c_str(), camel_name.c_str());
       }
     } else {
       if (field_type == FieldType::USERDEFINE) {
         static const char *const Template_TypeName_User_Define = "\n/*\n* %s\n*/\n"
-                                                                 "inline const std::shared_ptr<%s> & %s::get%s() const {\n"
+                                                                 "inline const std::shared_ptr<%s> & get%s() const {\n"
                                                                  TB "return %s;\n"
                                                                  "}\n";
-        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define, getter_commont.c_str(), msgDefine->get_msg_name().c_str(),
+        RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_User_Define, getter_commont.c_str(),
                           user_define_type_name.c_str(), head_up_name.c_str(),
                           camel_name.c_str());
       } else if (field_type == FieldType::STRING) {
         static const char *const Template_TypeName_String = "\n/*\n* %s\n*/\n"
-                                                            "inline const std::shared_ptr<std::string> %s::get%s() const {\n"
+                                                            "inline const std::shared_ptr<std::string> get%s() const {\n"
                                                             TB "return %s;\n"
                                                             "}\n";
         RETURN_CODEFORMAT(tab.c_str(), Template_TypeName_String, getter_commont.c_str(),
-                          msgDefine->get_msg_name().c_str(), head_up_name.c_str(),
+                          head_up_name.c_str(),
                           camel_name.c_str());
       } else {
         static const char *const Template_TypeName_Inner = "\n/*\n* %s\n*/\n"
@@ -324,7 +321,8 @@ const string CppFieldDefine::create_class_member(const string &tab, CodeType ct)
         if (!defualt_value.is_set) {
           RETURN_CODEFORMAT(tab.c_str(), Template_Member_String, camel_name.c_str());
         } else {
-          RETURN_CODEFORMAT(tab.c_str(), Template_Member_String_Default, camel_name.c_str(), defualt_value.value.s.c_str());
+          RETURN_CODEFORMAT(tab.c_str(), Template_Member_String_Default, camel_name.c_str(),
+                            defualt_value.value.s.c_str());
         }
       } else {
         static const char *const Template_Member_Inner = "%s %s = 0;\n";
@@ -334,20 +332,20 @@ const string CppFieldDefine::create_class_member(const string &tab, CodeType ct)
           RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner, FieldTypeStr[static_cast<int>(field_type)],
                             camel_name.c_str());
         } else {
-          switch(defualt_value.ft) {
+          switch (defualt_value.ft) {
             case FieldType::INT32:
             case FieldType::INT64:
             case FieldType::UINT32:
-            case FieldType::UINT64:
-              RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Int, FieldTypeStr[static_cast<int>(field_type)],
-                              camel_name.c_str(), defualt_value.value.i);
+            case FieldType::UINT64: RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Int,
+                                                      FieldTypeStr[static_cast<int>(field_type)],
+                                                      camel_name.c_str(), defualt_value.value.i);
             case FieldType::DOUBLE:
-            case FieldType::FLOAT:
-              RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Double, FieldTypeStr[static_cast<int>(field_type)],
-                              camel_name.c_str(), defualt_value.value.d);
-            default:
-              RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Int, FieldTypeStr[static_cast<int>(field_type)],
-                              camel_name.c_str(), (uint64_t)0);
+            case FieldType::FLOAT: RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Double,
+                                                     FieldTypeStr[static_cast<int>(field_type)],
+                                                     camel_name.c_str(), defualt_value.value.d);
+            default: RETURN_CODEFORMAT(tab.c_str(), Template_Member_Inner_Default_Int,
+                                       FieldTypeStr[static_cast<int>(field_type)],
+                                       camel_name.c_str(), (uint64_t) 0);
           }
         }
       }

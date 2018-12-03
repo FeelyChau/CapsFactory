@@ -1,7 +1,7 @@
 //
 // Created by 周飞宇 on 2018/11/20.
 //
-
+#include <sys/stat.h>
 #include "JavaMsgGroup.h"
 #include "JavaMsgDefine.h"
 #include "Common.h"
@@ -45,7 +45,7 @@ void JavaMsgGroup::create_code_file(const string &file_path) {
          TB2"private ByteOrder(){}\n"
          TB"}\n";
   Common::write_file(file_path + "java/MessageType.java", common_class);
-
+  mkdir("./java/", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
   for (auto &msg : msg_define) {
     Common::write_file(file_path + "java/" + msg->get_msg_name() + ".java", package + import +
             msg->create_code_string(TB, CodeType::SOURCE));

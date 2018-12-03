@@ -212,7 +212,7 @@ bool BaseMsgGroup::parse(cJSON *root) {
   if (comment && comment->type == cJSON_String)
     this->comment = comment->valuestring;
 
-  cJSON *msgs = cJSON_GetObjectItem(root, "Msg");
+  cJSON *msgs = cJSON_GetObjectItem(root, "Message");
   if (msgs && msgs->type == cJSON_Array) {
     for (int i = 0; i < cJSON_GetArraySize(msgs); ++i) {
       cJSON *msg = cJSON_GetArrayItem(msgs, i);

@@ -2,6 +2,7 @@
 // Created by 周飞宇 on 2018/11/21.
 //
 
+#include <sys/stat.h>
 #include "JSMsgGroup.h"
 #include "JSMsgDefine.h"
 #include "Common.h"
@@ -58,6 +59,7 @@ void JSMsgGroup::create_code_file(const string &file_path) {
     string content;
     CODEFORMAT(content, "", Template_All, enum_define.c_str(), class_define.c_str(), exports.c_str());
     Common::write_file("", content);
+    mkdir("./js/", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     if (ns == "")
       Common::write_file(file_path + "js/CapsMsg.js", content);
     else

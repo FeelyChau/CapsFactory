@@ -10,9 +10,12 @@ string CppMsgDefine::create_code_string(const string &tab, CodeType ct) {
   if (ct == CodeType::HEAD) {
 
     static const char *const Template_Msg_Class_Head = "#ifndef %s\n"
-                                                  "#def %s\n"
-                                                  "#include \"MessageCommon.h\"\n"
-                                                  "%s";
+                                                       "#define %s\n"
+                                                       "#include <vector>\n"
+                                                       "#include <string>\n"
+                                                       "#include <memory>\n"
+                                                       "#include \"caps.h\"\n"
+                                                       "%s";
 
     static const char *const Template_Msg_Class_Namespcae ="namespace %s {\n";
     static const char *const Template_Msg_Class_Body ="\n/*\n * %s\n */\n"
@@ -76,8 +79,10 @@ string CppMsgDefine::create_code_string(const string &tab, CodeType ct) {
 
   } else {
     static const char *const Template_Msg_Class = "#include \"%s.h\"\n"
+                                                  "#include \"MessageDefine.h\"\n"
+                                                  "%s"
                                                   "%s";
-
+    string ns = msg_group->get_ns().length() == 0 ? "\n" : "using namespace " + msg_group->get_ns() + ";\n";
     string incList;
     string getter;
     //field getter
@@ -96,7 +101,7 @@ string CppMsgDefine::create_code_string(const string &tab, CodeType ct) {
     string serialize_for_caps_obj = create_serialize_for_caps_obj("", CodeType::SOURCE);
     //deserialize for caps obj
     string deserialize_for_caps_obj = create_deserialize_for_caps_obj("", CodeType::SOURCE);
-    RETURN_CODEFORMAT(tab.c_str(), Template_Msg_Class, msg_name.c_str(),
+    RETURN_CODEFORMAT(tab.c_str(), Template_Msg_Class, msg_name.c_str(), ns.c_str(),
                       (getter + setter + serialize + deserialize + serialize_for_caps_obj +
                        deserialize_for_caps_obj).c_str());
   }
@@ -156,7 +161,7 @@ string CppMsgDefine::create_deserialize(const string &tab, CodeType ct) {
                                                     TB"return CAPS_SUCCESS;\n"
                                                     "}\n\n"
                                                     "\n/*\n * deserialize this object from caps (with message type)\n */\n"
-                                                    "int32_t deserialize(std::shared_ptr<Caps> &caps) {\n"
+                                                    "int32_t %s::deserialize(std::shared_ptr<Caps> &caps) {\n"
                                                     "%s"
                                                     TB"return CAPS_SUCCESS;\n"
                                                     "}\n\n";
@@ -164,7 +169,7 @@ string CppMsgDefine::create_deserialize(const string &tab, CodeType ct) {
     for (auto &field : fields)
       field_deserialize += field->create_deserialize_function(TB, CodeType::SOURCE);
     RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize, msg_name.c_str(), field_deserialize.c_str(),
-                      field_deserialize.c_str());
+                      msg_name.c_str(), field_deserialize.c_str());
   } else {
     static const char *const Template_Deserialize = "\n/*\n * deserialize this object from buffer\n */\n"
                                                     "int32_t deserialize(void* buf, uint32_t bufSize);\n"
