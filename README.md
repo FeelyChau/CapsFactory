@@ -1,6 +1,6 @@
-基于[caps](https://github.com/Rokid/aife-mutils)的消息类生成工具，支持序列化，反序列化，访问器，支持的语言：c++， js，java
-js需要[node-caps](https://github.com/shadow-node/node-caps)支持
-java需要[caps-jni](https://github.com/Rokid/yoda-caps-java)支持
+基于[caps](https://github.com/Rokid/aife-mutils)的消息类生成工具，支持序列化，反序列化，访问器，支持的语言：c++， js，java;
+js需要[node-caps](https://github.com/shadow-node/node-caps)支持;
+java需要[caps-jni](https://github.com/Rokid/yoda-caps-java)支持;
 
 # 编译
 linux，mac测试通过
@@ -20,9 +20,9 @@ java代码生成：
 # 消息定义
 
 `{
-"NameSpace": "rokid",
-  "Comment": "demo message namespace",
-  "Message": [
+    "NameSpace": "rokid",
+    "Comment": "demo message namespace",
+    "Message": [
     {
       "MsgName": "DemoMessage",
       "Comment": "demo mesage define",
