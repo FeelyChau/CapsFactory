@@ -19,7 +19,7 @@ java代码生成：
 
 # 消息定义
 
-`{
+``` {
     "NameSpace": "rokid",
     "Comment": "demo message namespace",
     "Message": [
@@ -62,7 +62,8 @@ java代码生成：
       ]
     }
     ]
-}`
+}
+```
 
 `NameSpace`
 命名空间，c++对应namespace， java对应package， nodejs对应文件名
@@ -93,8 +94,3 @@ java代码生成：
 可选，当前字段默认值，int32, uint32, int64, uint64, float, double等类型字段必须为number；
 string型数据输入必须为string
 自定义类型暂不支持默认值设置
-
-
-
-
-
