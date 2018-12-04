@@ -63,7 +63,7 @@ std::string Common::head_upcase(const char *str) {
     std::string rst;
     if (*str != '\0')
     {
-        if (*(str + 1) >= 'a' && *(str + 1) <= 'z')
+        if ((*(str + 1) >= 'a' && *(str + 1) <= 'z') || (*(str) >= 'a' && *(str) <= 'z'))
         {
             rst.push_back((char)std::toupper(*str));
         }

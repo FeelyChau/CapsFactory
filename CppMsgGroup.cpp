@@ -90,7 +90,8 @@ void CppMsgGroup::create_code_file(const string &file_path) {
   //message define
   head = "#ifndef _MESSAGEDEFINE_H\n"
          "#define _MESSAGEDEFINE_H\n"
-         "#include <memory>\n";
+         "#include <memory>\n"
+         "#include <assert.h>\n";
   if (ns.length() > 0) {
     if (!comment.empty())
       head += "\n/*\n* " + comment + "\n*/\n";
