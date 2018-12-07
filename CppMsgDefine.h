@@ -19,6 +19,7 @@ private:
     virtual string create_deserialize(const string &tab, CodeType ct) override;
     virtual string create_serialize_for_caps_obj(const string &tab, CodeType ct) override;
     virtual string create_deserialize_for_caps_obj(const string &tab, CodeType ct) override;
+    string create_to_json(const string &tab, CodeType ct);
     virtual std::shared_ptr<BaseFieldDefine> new_field_define() override;
 public:
     CppMsgDefine() = default;

@@ -41,13 +41,7 @@ static void print_prompt(const char* progname) {
                               "\t-l [cpp, c, js, java]      set code language";
     printf(form, progname);
 }
-#define FUNC_STRING(v) "\"\\\"" #v "\\\":\\\"%s\\\"\"\n"
-#define FUNC_UINT32(v) "\"\\\"" #v "\\\":%u\""
-#define FUNC_INT32(v) "\"\\\"" #v "\\\":%d\""
-#define FUNC_UINT64(v) "\"\\\"" #v "\\\":%llu\""
-#define FUNC_INT64(v) "\"\\\"" #v "\\\":%lld\""
-#define FUNC_OBJ(v) "\"\\\"" #v "\\\":%s\""
-#define FUNC_ARRAY(v) "\"\\\"" #v "\\\":[%s]\""
+
 
 
 int main(int argc, char** argv) {

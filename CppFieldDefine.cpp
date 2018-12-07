@@ -7,6 +7,13 @@
 #include "CppFieldDefine.h"
 #include "Common.h"
 
+#define JSON_STRING(v) "\"\\\"" #v "\\\":\\\"%s\\\"\"\n"
+#define JSON_UINT32(v) "\"\\\"" #v "\\\":%u\""
+#define JSON_INT32(v) "\"\\\"" #v "\\\":%d\""
+#define JSON_UINT64(v) "\"\\\"" #v "\\\":%llu\""
+#define JSON_INT64(v) "\"\\\"" #v "\\\":%lld\""
+#define JSON_OBJ(v) "\"\\\"" #v "\\\":%s\""
+#define JSON_ARRAY(v) "\"\\\"" #v "\\\":[%s]\""
 
 const string CppFieldDefine::create_get_function(const string &tab, CodeType ct) {
   string getter_commont;
@@ -355,5 +362,32 @@ const string CppFieldDefine::create_class_member(const string &tab, CodeType ct)
 }
 
 const string CppFieldDefine::create_to_json_function(const string &tab, CodeType ct) {
-  return string();
+  if (ct == CodeType::SOURCE) {
+    if (repeated) {
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_Deserialize_Array_User_Define = "\"%s\":[%%s]";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_User_Define, head_up_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_Deserialize_Array_String = "\"%s\":[%%s]";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_String, head_up_name.c_str());
+      } else {
+        static const char *const Template_Deserialize_Array_Inner = "\"%s\":[%%s]";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_Inner, head_up_name.c_str());
+      }
+    } else {
+      if (field_type == FieldType::USERDEFINE) {
+        static const char *const Template_Deserialize_User_Define = "\"%s\":<<%%s";
+
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_User_Define, head_up_name.c_str());
+      } else if (field_type == FieldType::STRING) {
+        static const char *const Template_Deserialize_String = "\"%s\":<<";
+
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_String, head_up_name.c_str());
+      } else {
+        static const char *const Template_Deserialize_Inner = "\"%s\":%%s";
+        RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Inner, head_up_name.c_str());
+      }
+    }
+  } else
+    return string();
 }

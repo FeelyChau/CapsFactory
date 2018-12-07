@@ -57,6 +57,9 @@ string CppMsgDefine::create_code_string(const string &tab, CodeType ct) {
     string serialize_for_caps_obj = create_serialize_for_caps_obj(TB, CodeType::HEAD);
     //deserialize for caps obj
     string deserialize_for_caps_obj = create_deserialize_for_caps_obj(TB, CodeType::HEAD);
+    //to json
+    string to_json = create_to_json(TB, CodeType::HEAD);
+
     string head;
     CODEFORMAT(head, tab.c_str(), Template_Msg_Class_Head, ("_" + msg_name_upper + "_H").c_str(),
                       ("_" + msg_name_upper + "_H").c_str(), incs.c_str());
@@ -67,7 +70,7 @@ string CppMsgDefine::create_code_string(const string &tab, CodeType ct) {
     CODEFORMAT(body, tab.c_str(), Template_Msg_Class_Body, comment.c_str(),
                       msg_name.c_str(), members.c_str(), msg_name.c_str(),
                       msg_name.c_str(), (getter + setter + serialize + deserialize + serialize_for_caps_obj +
-                                         deserialize_for_caps_obj).c_str());
+                                         deserialize_for_caps_obj + to_json).c_str());
     string end;
     CODEFORMAT(end, tab.c_str(), Template_Msg_Class_End, ("_" + msg_name_upper + "_H").c_str());
     if (msg_group->get_ns().length() == 0)
@@ -101,9 +104,11 @@ string CppMsgDefine::create_code_string(const string &tab, CodeType ct) {
     string serialize_for_caps_obj = create_serialize_for_caps_obj("", CodeType::SOURCE);
     //deserialize for caps obj
     string deserialize_for_caps_obj = create_deserialize_for_caps_obj("", CodeType::SOURCE);
+    //to json
+    string to_json = create_to_json("", CodeType::SOURCE);
     RETURN_CODEFORMAT(tab.c_str(), Template_Msg_Class, msg_name.c_str(), ns.c_str(),
                       (getter + setter + serialize + deserialize + serialize_for_caps_obj +
-                       deserialize_for_caps_obj).c_str());
+                       deserialize_for_caps_obj + to_json).c_str());
   }
 }
 
@@ -214,6 +219,26 @@ string CppMsgDefine::create_deserialize_for_caps_obj(const string &tab, CodeType
   } else {
     static const char *const Template_DeserializeForCapsObj = "\n/*\n * deserialize this object from caps (without message type)\n */\n"
                                                               "int32_t deserializeForCapsObj(std::shared_ptr<Caps> &caps);\n";
+    return Common::add_tab(Template_DeserializeForCapsObj, tab.c_str());
+  }
+}
+
+string CppMsgDefine::create_to_json(const string &tab, CodeType ct) {
+  if (ct == CodeType::SOURCE) {
+    static const char *const Template_DeserializeForCapsObj = "\n/*\n * deserialize this object from caps (without message type)\n */\n"
+                                                              "std::string %s::toJsonString() {"
+                                                              TB"std::ostringstream stringStream;\n"
+                                                              TB"stringStream << \"{\"<<"
+                                                              "%s\"}\";"
+                                                              TB"return stringStream.str();\n"
+                                                              "}\n\n";
+    string field_deserialize;
+    for (auto &field : fields)
+      field_deserialize += field->create_to_json_function(TB, CodeType::SOURCE) + "<<";
+    RETURN_CODEFORMAT(tab.c_str(), Template_DeserializeForCapsObj, msg_name.c_str(), field_deserialize.c_str());
+  } else {
+    static const char *const Template_DeserializeForCapsObj = "\n/*\n * format object to json string\n */\n"
+                                                              "std::string toJsonString();\n";
     return Common::add_tab(Template_DeserializeForCapsObj, tab.c_str());
   }
 }
