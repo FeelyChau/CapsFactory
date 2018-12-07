@@ -58,7 +58,7 @@ string CppMsgDefine::create_code_string(const string &tab, CodeType ct) {
     //deserialize for caps obj
     string deserialize_for_caps_obj = create_deserialize_for_caps_obj(TB, CodeType::HEAD);
     //to json
-    string to_json = create_to_json(TB, CodeType::HEAD);
+    string to_json = "";//create_to_json(TB, CodeType::HEAD);
 
     string head;
     CODEFORMAT(head, tab.c_str(), Template_Msg_Class_Head, ("_" + msg_name_upper + "_H").c_str(),
@@ -105,7 +105,7 @@ string CppMsgDefine::create_code_string(const string &tab, CodeType ct) {
     //deserialize for caps obj
     string deserialize_for_caps_obj = create_deserialize_for_caps_obj("", CodeType::SOURCE);
     //to json
-    string to_json = create_to_json("", CodeType::SOURCE);
+    string to_json = "";//create_to_json("", CodeType::SOURCE);
     RETURN_CODEFORMAT(tab.c_str(), Template_Msg_Class, msg_name.c_str(), ns.c_str(),
                       (getter + setter + serialize + deserialize + serialize_for_caps_obj +
                        deserialize_for_caps_obj + to_json).c_str());

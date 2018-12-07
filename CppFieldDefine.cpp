@@ -227,7 +227,10 @@ const string CppFieldDefine::create_deserialize_function(const string &tab, Code
         static const char *const Template_Deserialize_Array_User_Define = "int32_t arraySize%s = 0;\n"
                                                                           "int32_t rRst%s = caps->read(arraySize%s);\n"
                                                                           "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
-                                                                          "if (!%s) %s = std::make_shared<std::vector<%s>>();\n"
+                                                                          "if (!%s)\n"
+                                                                          TB"%s = std::make_shared<std::vector<%s>>();\n"
+                                                                          "else\n"
+                                                                          TB"%s->clear();\n"
                                                                           "for(int32_t i = 0; i < arraySize%s;++i) {\n"
                                                                           TB"std::shared_ptr<Caps> c;\n"
                                                                           TB"if (caps->read(c) == CAPS_SUCCESS && c) {\n"
@@ -238,13 +241,16 @@ const string CppFieldDefine::create_deserialize_function(const string &tab, Code
                                                                           "}\n";
         RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_User_Define, head_up_name.c_str(),
                           head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(),
-                          camel_name.c_str(), head_up_name.c_str(), user_define_type_name.c_str(),
+                          camel_name.c_str(), camel_name.c_str(), user_define_type_name.c_str(), camel_name.c_str(),
                           head_up_name.c_str(), camel_name.c_str(), camel_name.c_str());
       } else if (field_type == FieldType::STRING) {
         static const char *const Template_Deserialize_Array_String = "int32_t arraySize%s = 0;\n"
                                                                      "int32_t rRst%s = caps->read(arraySize%s);\n"
                                                                      "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
-                                                                     "if (!%s) %s = std::make_shared<std::vector<std::string>>();\n"
+                                                                     "if (!%s)\n"
+                                                                     TB"%s = std::make_shared<std::vector<std::string>>();\n"
+                                                                     "else\n"
+                                                                     TB"%s->clear();\n"
                                                                      "for(int32_t i = 0; i < arraySize%s;++i) {\n"
                                                                      TB"%s->emplace_back();\n"
                                                                      TB"int32_t rRst = caps->read_string(%s->back());\n"
@@ -252,13 +258,16 @@ const string CppFieldDefine::create_deserialize_function(const string &tab, Code
                                                                      "}\n";
         RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_String, head_up_name.c_str(), head_up_name.c_str(),
                           head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
-                          camel_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
+                          camel_name.c_str(), camel_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
                           camel_name.c_str());
       } else {
         static const char *const Template_Deserialize_Array_Inner = "int32_t arraySize%s = 0;\n"
                                                                     "int32_t rRst%s = caps->read(arraySize%s);\n"
                                                                     "if (rRst%s != CAPS_SUCCESS) return rRst%s;\n"
-                                                                    "if (!%s) %s = std::make_shared<vector<%s>>();\n"
+                                                                    "if (!%s)\n"
+                                                                    TB"%s = std::make_shared<std::vector<%s>>();\n"
+                                                                    "else\n"
+                                                                    TB"%s->clear();\n"
                                                                     "for(int32_t i = 0; i < arraySize%s;++i) {\n"
                                                                     TB"%s->emplace_back();\n"
                                                                     TB"int32_t rRst = caps->read(%s->back());\n"
@@ -266,7 +275,7 @@ const string CppFieldDefine::create_deserialize_function(const string &tab, Code
                                                                     "}\n";
         RETURN_CODEFORMAT(tab.c_str(), Template_Deserialize_Array_Inner, head_up_name.c_str(), head_up_name.c_str(),
                           head_up_name.c_str(), head_up_name.c_str(), head_up_name.c_str(), camel_name.c_str(),
-                          camel_name.c_str(), FieldTypeStr[static_cast<int>(field_type)],
+                          camel_name.c_str(), FieldTypeStr[static_cast<int>(field_type)], camel_name.c_str(),
                           head_up_name.c_str(), camel_name.c_str(),
                           camel_name.c_str());
       }
