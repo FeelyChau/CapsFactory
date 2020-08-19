@@ -8,14 +8,14 @@ linux，mac测试通过
 
 # Usage
 c++代码生成：
-`/PATH/TO/CapsFactory -o ./message_define.json -l cpp`
+`/PATH/TO/CapsFactory -i ./message_define.json -l cpp`
 将在当前目录创建cpp文件夹，`include "MessageCommon.h"`即可
 
 js代码生成：
-`/PATH/TO/CapsFactory -o ./message_define.json -l js`
+`/PATH/TO/CapsFactory -i ./message_define.json -l js`
 
 java代码生成：
-`/PATH/TO/CapsFactory -o ./message_define.json -l java`
+`/PATH/TO/CapsFactory -i ./message_define.json -l java`
 
 # 消息定义
 
